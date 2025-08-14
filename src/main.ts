@@ -20,20 +20,24 @@ window.addEventListener("DOMContentLoaded", () => {
 		camera.attachControl(canvas, true);
 		const light = new Babylon.HemisphericLight("light", new Babylon.Vector3(0, 1, 0), scene);
 		light.diffuse = new Babylon.Color3(1, 1, 1);
-		// const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
-		const card1 = Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene,
-		function(meshes) {
-				for (let i:number = 1; i <= 53; i++)
-				{
-					meshes[i].scaling = new Babylon.Vector3(500, 500, 500);
-					meshes[i].position = new Babylon.Vector3(100, 3 * i, -25);
-					meshes[i].rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
-					deck._deck[i].textures = meshes[i];
-					if (i > 25)
-						meshes[i].isVisible = false;
-				}
-			}
-		);
+		const table = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene, (table) => {
+
+		Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, (meshes) => {
+			console.log(meshes.length);
+			meshes.map((mesh, i) => {
+					if (i == 0) 
+						return ;
+				mesh.scaling = new Babylon.Vector3(500, 500, 500);
+				mesh.position = new Babylon.Vector3(500, 500, 100 * i);
+				mesh.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
+				deck._deck[i - 1].textures = mesh;
+				// console.log(`[${i}] mesh.name = ${mesh.name}`);
+				// if (i > 25)
+				// 	mesh.isVisible = false;
+    });
+		});
+
+});
 		return scene;
 	}
 

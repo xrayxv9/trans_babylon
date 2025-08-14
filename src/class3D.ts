@@ -4,7 +4,7 @@ type Card = {
 	value: number;
 	color: number;
 	texture: number;
-	textures: Babylon.AbstractMesh;
+	textures: Babylon.AbstractMesh | null;
 };
 
 function Ale(num: number): number
@@ -53,7 +53,7 @@ export class Card3D{
 					value: value, 
 					color: color,
 					texture: color * 13 + value,
-					textures: null as unknown as Babylon.AbstractMesh,
+					textures: null ,
 				})
 			}
 		}
