@@ -34,6 +34,15 @@ export class Card3D{
 		this.shuffle();
     }
 
+	setTexture( mesh:Babylon.AbstractMesh, i:number)
+	{
+		for (let y:number = 0; i < 52; i++)
+		{
+			if (this._deck[y].texture != i)
+				this._deck[y].textures = mesh;
+		}
+	}
+
 	shuffle()
 	{
         this._bool = Array.from({ length: 4 }, () => Array(13).fill(false));

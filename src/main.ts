@@ -11,7 +11,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	const createScene = () =>
 	{
 		const scene = new Babylon.Scene(engine);
-		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,150,-350), scene);
+		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,20,0), scene);
 		camera.fov = 1.5;
 
 		camera.beta += -0.11;
@@ -24,23 +24,21 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	const { scene } = createScene();
 	const deck = new Card3D();
-	// const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
+	const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
 	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, function(meshes) {
-	console.log(meshes.length);
-		const frameRate: number = 60;
+		console.log(meshes.length);
+		const frameRate: number = 90;
 
-	
-
-	meshes.map((mesh, i) => {
-		if (i == 0) 
-		{
-			mesh.position = new Babylon.Vector3(125, 25, -25);
-			return ;
-		}
-		mesh.scaling = new Babylon.Vector3(200, 200, 200);
-		mesh.position = new Babylon.Vector3(100, 50, 25 * i);
-		mesh.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
-		deck._deck[i - 1].textures = mesh;
+		meshes.map((mesh, i) => {
+			if (i == 0) 
+			{
+				mesh.position = new Babylon.Vector3(125, 25, -25);
+				return ;
+			}
+			mesh.scaling = new Babylon.Vector3(200, 200, 200);
+			mesh.position = new Babylon.Vector3(100, 50, 25 * i);
+			mesh.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
+			deck._deck[deck._deck[i].texture - 1].textures = mesh;
 			const animation = new Babylon.Animation(
 				"MoveAnime",
 				"position",
@@ -49,16 +47,39 @@ window.addEventListener("DOMContentLoaded", () => {
 				Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
 			)
 
-		const startPos = deck._deck[i - 1].textures?.position.clone();
-		const endPos = new Babylon.Vector3(100, 100, 100);
+			const startPos = mesh.position.clone();
+			// console.log(startPos);
+			// const startPos = new Babylon.Vector3(100, 100, 100);
+			const endPos = new Babylon.Vector3(10000, -9000, 900);
 
-		const keys = [
-			{ "frame": 0, value:startPos },
-			{ "frame": frameRate, value:endPos }
-		]
-		animation.setKeys(keys);
+			const keys = [
+				{ "frame": 0, value:startPos },
+				{ "frame": 60, value:endPos },
+				{ "frame": frameRate, value:endPos }
+			];
 
-		deck._deck[i - 1].textures!.animations = [animation];
+			animation.setKeys(keys);
+
+			const rotateAnime = new Babylon.Animation(
+				"rotateAnime",
+				"rotation",
+				frameRate,
+				Babylon.Animation.ANIMATIONTYPE_VECTOR3,
+				Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
+			)
+
+			const rotateStart = mesh.rotation.clone();
+			const rotateEnd = rotateStart.add(new Babylon.Vector3(Math.PI, 0, 0));
+
+			const keysRotate = [
+				{ "frame": 0, value:rotateStart },
+				{ "frame": 30, value:rotateStart },
+				{ "frame": 60, value:rotateEnd },
+				{ "frame": frameRate, value:rotateEnd }
+			]
+
+			rotateAnime.setKeys(keysRotate);
+			deck._deck[i - 1].textures!.animations = [animation, rotateAnime];
 		});
 	});
 
@@ -68,7 +89,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		depth: 10
 	}, scene);
 
-	box.position = new Babylon.Vector3(0, 0, 10);
+	box.position = new Babylon.Vector3(0, 100, 100);
 
 	box.actionManager = new Babylon.ActionManager(scene);
 	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
@@ -76,8 +97,8 @@ window.addEventListener("DOMContentLoaded", () => {
 		function (evt){
 			if (deck._deck[0].textures)
 			{
-				console.log("dbawjkbdawbdhjkawbdawbj");
-				scene.beginAnimation(deck._deck[0].textures.animations, 1, 60, false);
+				console.log(deck._deck[0].textures);
+				scene.beginAnimation(deck._deck[0].textures, 0, 60, false);
 			}
 		}
 	));
