@@ -1,4 +1,5 @@
 import * as Babylon from "@babylonjs/core";
+import type { AbstractMesh } from "babylonjs";
 
 type Card = {
 	value: number;
@@ -24,13 +25,19 @@ function check(toCheck: boolean[][])
 }
 
 export class Card3D{
+	private count: number;
+	private countDealer: number;
     private _bool: boolean[][];
     public _deck: Card[];
+	public meshes: Babylon.AbstractMesh[];
 
     constructor() {
         this._bool = Array.from({ length: 4 }, () => Array(13).fill(false));
 		this._deck = [];
-		
+		this.meshes = [];
+		this.count = 0;
+		this.countDealer = 0;
+
 		this.shuffle();
     }
 
@@ -45,6 +52,15 @@ export class Card3D{
 			}
 		}
 		return 0;
+	}
+
+	lauchAnim()
+	{
+		let count:number;
+
+		count = this.count;
+		this.count++;
+		return count;
 	}
 
 	shuffle()
@@ -70,6 +86,27 @@ export class Card3D{
 				})
 			}
 		}
+		this.meshes.map((mesh, i) => {
+			if (i == 0) 
+			{
+				mesh.position = new Babylon.Vector3(125, 25, -25);
+				return ;
+			}
+			this.setTexture(mesh, i - 1);
+		});
+
+	}
+
+	shuffleTexture()
+	{
+		this.count = 0;
+		this.shuffle();
+		for (let y:number = 0; y < 52; y++)
+		{
+			this._deck[y].textures!.scaling = new Babylon.Vector3(300, 10, 300);
+			this._deck[y].textures!.position = new Babylon.Vector3(100, 50, 20 * y);
+			this._deck[y].textures!.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
+		}
 	}
 
 	print()
@@ -85,5 +122,10 @@ export class Card3D{
 			else if (this._deck[i].color == 3)
 				console.log(i + " : trefle : " + this._deck[i].value + " value global : " + this._deck[i].texture);
 		}
+	}
+
+	startAnim(scene:Babylon.Scene, num:number)
+	{
+		scene.beginAnimation(this._deck[num].textures, 0, 90, false);
 	}
 }
