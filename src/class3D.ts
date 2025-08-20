@@ -36,11 +36,15 @@ export class Card3D{
 
 	setTexture( mesh:Babylon.AbstractMesh, i:number)
 	{
-		for (let y:number = 0; i < 52; i++)
+		for (let y:number = 0; y < 52; y++)
 		{
-			if (this._deck[y].texture != i)
+			if (this._deck[y].texture == i)
+			{
 				this._deck[y].textures = mesh;
+				return y;
+			}
 		}
+		return 0;
 	}
 
 	shuffle()

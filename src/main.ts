@@ -11,11 +11,11 @@ window.addEventListener("DOMContentLoaded", () => {
 	const createScene = () =>
 	{
 		const scene = new Babylon.Scene(engine);
-		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,20,0), scene);
-		camera.fov = 1.5;
+		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,150,-350), scene);
+		camera.fov = 1.2;
 
 		camera.beta += -0.11;
-		camera.attachControl(canvas, true);
+		// camera.attachControl(canvas, true);
 		const light = new Babylon.HemisphericLight("light", new Babylon.Vector3(0, 1, 0), scene);
 		light.diffuse = new Babylon.Color3(1, 1, 1);
 
@@ -26,9 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	const deck = new Card3D();
 	const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
 	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, function(meshes) {
-		console.log(meshes.length);
 		const frameRate: number = 90;
-
 		meshes.map((mesh, i) => {
 			if (i == 0) 
 			{
@@ -38,7 +36,8 @@ window.addEventListener("DOMContentLoaded", () => {
 			mesh.scaling = new Babylon.Vector3(200, 200, 200);
 			mesh.position = new Babylon.Vector3(100, 50, 25 * i);
 			mesh.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
-			deck._deck[deck._deck[i].texture - 1].textures = mesh;
+			let y = deck.setTexture(mesh, i - 1);
+
 			const animation = new Babylon.Animation(
 				"MoveAnime",
 				"position",
@@ -48,8 +47,6 @@ window.addEventListener("DOMContentLoaded", () => {
 			)
 
 			const startPos = mesh.position.clone();
-			// console.log(startPos);
-			// const startPos = new Babylon.Vector3(100, 100, 100);
 			const endPos = new Babylon.Vector3(10000, -9000, 900);
 
 			const keys = [
@@ -79,7 +76,7 @@ window.addEventListener("DOMContentLoaded", () => {
 			]
 
 			rotateAnime.setKeys(keysRotate);
-			deck._deck[i - 1].textures!.animations = [animation, rotateAnime];
+			deck._deck[y].textures!.animations = [animation, rotateAnime];
 		});
 	});
 
@@ -97,7 +94,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		function (evt){
 			if (deck._deck[0].textures)
 			{
-				console.log(deck._deck[0].textures);
+				console.log(deck._deck[0].texture);
 				scene.beginAnimation(deck._deck[0].textures, 0, 60, false);
 			}
 		}
