@@ -5,10 +5,16 @@ import * as Babylon from "@babylonjs/core"
 import { Card3D } from './class3D'
 import { Animations } from './Animation'
 
+function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 	const engine = new Babylon.Engine(canvas, true);
 	console.log(canvas);
+	Babylon.RenderingManager.MAX_RENDERINGGROUPS = 52;
 
 	const createScene = () =>
 	{
@@ -29,6 +35,22 @@ window.addEventListener("DOMContentLoaded", () => {
 	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, function(meshes) {
 		deck.meshes = meshes;
 		deck.shuffleTexture();
+
+		let anim = new Animations();
+		let i:number = deck.lauchAnimDealer();
+		anim.createAnimeCardCroupier(deck._deck[i].textures!, i);
+		deck.startAnim(scene, i);
+		let y:number = deck.lauchAnim();
+		anim.createAnimeCard(deck._deck[y].textures!, y);
+		deck.startAnim(scene, y);
+		i = deck.lauchAnimDealer();
+		anim.createAnimeHidden(deck._deck[i].textures!, i);
+		deck.startAnim(scene, i);
+		y = deck.lauchAnim();
+		anim.createAnimeCard(deck._deck[y].textures!, y);
+		deck.startAnim(scene, y);
+		anim.returnCard(deck._deck[i].textures!, i);
+		deck.startAnim(scene, i);
 	});
 
 	const box = Babylon.MeshBuilder.CreateBox("affirmative", { 
@@ -38,22 +60,16 @@ window.addEventListener("DOMContentLoaded", () => {
 	}, scene);
 
 	box.position = new Babylon.Vector3(0, 100, 100);
-
 	box.actionManager = new Babylon.ActionManager(scene);
 	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
 		function (evt){
 			const i:number = deck.lauchAnim();
 			if (i >= 52)
-			{
-				console.log("All deck cards were user");
 				deck.shuffleTexture();
-				return ;
-			}
 			let anim = new Animations();
 			anim.createAnimeCard(deck._deck[i].textures!, i);
 			deck.startAnim(scene, i);
-			console.log(" i : " + i);
 		}
 	));
 

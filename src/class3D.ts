@@ -60,7 +60,16 @@ export class Card3D{
 
 		count = this.count;
 		this.count++;
-		return count;
+		return count + this.countDealer;
+	}
+
+	lauchAnimDealer()
+	{
+		let count:number;
+
+		count = this.countDealer;
+		this.countDealer++;
+		return count + this.count;
 	}
 
 	shuffle()
