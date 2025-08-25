@@ -3,14 +3,13 @@ import * as Babylon from "@babylonjs/core";
 export class Animations
 {
 	private frameRate:number;
+	private moveCard:Babylon.Animation;
+	private rotateCard:Babylon.Animation;
 
 	constructor() {
 		this.frameRate = 90;
-	}
 
-	createAnimeCard(mesh:Babylon.AbstractMesh, countCards:number)
-	{
-		const moveCard = new Babylon.Animation(
+		this.moveCard = new Babylon.Animation(
 			"MoveAnime",
 			"position",
 			this.frameRate,
@@ -18,6 +17,17 @@ export class Animations
 			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
 		)
 
+		this.rotateCard = new Babylon.Animation(
+			"rotateAnime",
+			"rotation",
+			this.frameRate,
+			Babylon.Animation.ANIMATIONTYPE_VECTOR3,
+			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
+		)
+	}
+
+	createAnimeCard(mesh:Babylon.AbstractMesh, countCards:number)
+	{
 		const startPos = mesh.position.clone();
 		const endPos = new Babylon.Vector3(17000 - (countCards * 1000), -20000, 700 - (countCards * 10));
 
@@ -27,15 +37,7 @@ export class Animations
 			{ "frame": 90, value:endPos },
 		];
 
-		moveCard.setKeys(keys);
-
-		const rotateCard = new Babylon.Animation(
-			"rotateAnime",
-			"rotation",
-			this.frameRate,
-			Babylon.Animation.ANIMATIONTYPE_VECTOR3,
-			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
-		)
+		this.moveCard.setKeys(keys);
 
 		const rotateStart = mesh.rotation.clone();
 		const rotateEnd = rotateStart.add(new Babylon.Vector3(Math.PI, 0, 0));
@@ -47,21 +49,13 @@ export class Animations
 			{ "frame": this.frameRate, value:rotateEnd }
 		]
 	
-		rotateCard.setKeys(keysRotate);
-		mesh!.animations = [moveCard, rotateCard];
+		this.rotateCard.setKeys(keysRotate);
+		mesh!.animations = [this.moveCard, this.rotateCard];
 		mesh.renderingGroupId = countCards;
 	}
 
 	createAnimeCardCroupier(mesh:Babylon.AbstractMesh, countCards:number)
 	{
-		const moveCard = new Babylon.Animation(
-			"MoveAnime",
-			"position",
-			this.frameRate,
-			Babylon.Animation.ANIMATIONTYPE_VECTOR3,
-			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
-		)
-
 		const startPos = mesh.position.clone();
 		const endPos = new Babylon.Vector3(14000 - (countCards * 1000), -9000, 700 - (countCards * 10));
 
@@ -71,15 +65,7 @@ export class Animations
 			{ "frame": 90, value:endPos },
 		];
 
-		moveCard.setKeys(keys);
-
-		const rotateCard = new Babylon.Animation(
-			"rotateAnime",
-			"rotation",
-			this.frameRate,
-			Babylon.Animation.ANIMATIONTYPE_VECTOR3,
-			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
-		)
+		this.moveCard.setKeys(keys);
 
 		const rotateStart = mesh.rotation.clone();
 		const rotateEnd = rotateStart.add(new Babylon.Vector3(Math.PI, 0, 0));
@@ -91,20 +77,12 @@ export class Animations
 			{ "frame": this.frameRate, value:rotateEnd }
 		]
 	
-		rotateCard.setKeys(keysRotate);
-		mesh!.animations = [moveCard, rotateCard];
+		this.rotateCard.setKeys(keysRotate);
+		mesh!.animations = [this.moveCard, this.rotateCard];
 		mesh.renderingGroupId = countCards;
 	}
 	createAnimeHidden(mesh:Babylon.AbstractMesh, countCards:number)
 	{
-		const moveCard = new Babylon.Animation(
-			"MoveAnime",
-			"position",
-			this.frameRate,
-			Babylon.Animation.ANIMATIONTYPE_VECTOR3,
-			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
-		)
-
 		const startPos = mesh.position.clone();
 		const endPos = new Babylon.Vector3(14000 - (countCards * 1000), -9000, 700 - (countCards * 10));
 
@@ -114,22 +92,14 @@ export class Animations
 			{ "frame": 90, value:endPos },
 		];
 
-		moveCard.setKeys(keys);
+		this.moveCard.setKeys(keys);
 
-		mesh!.animations = [moveCard];
+		mesh!.animations = [this.moveCard];
 		mesh.renderingGroupId = countCards;
 	}
 
 	returnCard(mesh:Babylon.AbstractMesh, countCards:number)
 	{
-		const rotateCard = new Babylon.Animation(
-			"RotateAnime",
-			"rotate",
-			this.frameRate,
-			Babylon.Animation.ANIMATIONTYPE_VECTOR3,
-			Babylon.Animation.ANIMATIONLOOPMODE_CONSTANT
-		)
-
 		const rotateStart = mesh.rotation.clone();
 		const rotateEnd = rotateStart.add(new Babylon.Vector3(Math.PI, 0, 0));
 
@@ -140,7 +110,8 @@ export class Animations
 			{ "frame": this.frameRate, value:rotateEnd }
 		]
 	
-		rotateCard.setKeys(keysRotate);
+		this.rotateCard.setKeys(keysRotate);
+		mesh!.animations = [this.rotateCard];
 		mesh.renderingGroupId = countCards;
 	}
 }

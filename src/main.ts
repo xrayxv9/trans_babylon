@@ -1,4 +1,3 @@
-
 import './style.css'
 import "@babylonjs/loaders"
 import * as Babylon from "@babylonjs/core"
@@ -13,7 +12,6 @@ function delay(ms: number) {
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 	const engine = new Babylon.Engine(canvas, true);
-	console.log(canvas);
 	Babylon.RenderingManager.MAX_RENDERINGGROUPS = 52;
 
 	const createScene = () =>
@@ -32,25 +30,9 @@ window.addEventListener("DOMContentLoaded", () => {
 	const { scene } = createScene();
 	const deck = new Card3D();
 	const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
-	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, function(meshes) {
+	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, async function(meshes) {
 		deck.meshes = meshes;
-		deck.shuffleTexture();
-
-		let anim = new Animations();
-		let i:number = deck.lauchAnimDealer();
-		anim.createAnimeCardCroupier(deck._deck[i].textures!, i);
-		deck.startAnim(scene, i);
-		let y:number = deck.lauchAnim();
-		anim.createAnimeCard(deck._deck[y].textures!, y);
-		deck.startAnim(scene, y);
-		i = deck.lauchAnimDealer();
-		anim.createAnimeHidden(deck._deck[i].textures!, i);
-		deck.startAnim(scene, i);
-		y = deck.lauchAnim();
-		anim.createAnimeCard(deck._deck[y].textures!, y);
-		deck.startAnim(scene, y);
-		anim.returnCard(deck._deck[i].textures!, i);
-		deck.startAnim(scene, i);
+		await deck.shuffleTexture(scene);
 	});
 
 	const box = Babylon.MeshBuilder.CreateBox("affirmative", { 
@@ -63,13 +45,29 @@ window.addEventListener("DOMContentLoaded", () => {
 	box.actionManager = new Babylon.ActionManager(scene);
 	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
-		function (evt){
+		async function (evt){
 			const i:number = deck.lauchAnim();
-			if (i >= 52)
-				deck.shuffleTexture();
 			let anim = new Animations();
-			anim.createAnimeCard(deck._deck[i].textures!, i);
-			deck.startAnim(scene, i);
+			if (deck.totalCroupier < 17)
+			{
+				anim.createAnimeCardCroupier(deck._deck[i].textures!, i);
+				deck.startAnim(scene, i, true);
+			}
+		}
+	));
+
+	const reset = Babylon.MeshBuilder.CreateBox("affirmative", { 
+		width: 10,
+		height: 10,
+		depth: 10
+	}, scene);
+
+	reset.position = new Babylon.Vector3(0, 200, 100);
+	reset.actionManager = new Babylon.ActionManager(scene);
+	reset.actionManager.registerAction(new Babylon.ExecuteCodeAction(
+		Babylon.ActionManager.OnPickTrigger,
+		async function (evt){
+			await deck.shuffleTexture(scene);
 		}
 	));
 
