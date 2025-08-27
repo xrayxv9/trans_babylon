@@ -81,6 +81,7 @@ export class Animations
 		mesh!.animations = [this.moveCard, this.rotateCard];
 		mesh.renderingGroupId = countCards;
 	}
+
 	createAnimeHidden(mesh:Babylon.AbstractMesh, countCards:number)
 	{
 		const startPos = mesh.position.clone();

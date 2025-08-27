@@ -65,22 +65,47 @@ export class Card3D{
 		return 0;
 	}
 
-	lauchAnim()
+	async lauchAnim(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean)
 	{
 		let count:number;
 
 		count = this.count;
 		this.count++;
-		return count + this.countDealer;
+		this.anim.createAnimeCard(this._deck[count + this.countDealer].textures!, count);
+		await this.play(scene, count + this.countDealer, toAdd, croupierCard);
+		return count;
 	}
 
-	lauchAnimDealer()
+	async lauchAnimDealer(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean, animNumber:number)
 	{
 		let count:number;
+		let whichCard;
 
 		count = this.countDealer;
-		this.countDealer++;
-		return count + this.count;
+		whichCard = 3;
+		switch (animNumber)
+		{
+			case 0:
+			{
+				this.anim.createAnimeCardCroupier(this._deck[count + this.count].textures!, count);
+				this.countDealer++;
+				whichCard = count + this.count; 
+				break;
+			}
+			case 1:
+			{
+				this.anim.createAnimeHidden(this._deck[3].textures!, 1);
+				this.countDealer++;
+				break ;
+			}
+			case 2:
+			{
+				this.anim.returnCard(this._deck[3].textures!, 1);
+				break ;
+			}
+		}
+		await this.play(scene, whichCard, toAdd, croupierCard);
+		return count;
 	}
 
 	shuffle()
@@ -114,10 +139,41 @@ export class Card3D{
 			}
 			this.setTexture(mesh, i - 1);
 		});
-
 	}
 
-	addValueCroupier( num:number ):boolean
+	addValuePlayer( num:number )
+	{
+		switch(num)
+		{
+			case 0:{
+				if (this.totalPlayer + 11 < 21)
+					this.totalPlayer += 11;
+				else
+					this.totalPlayer += 1;
+				this.asNumberPlayer += 1;
+				break ;
+			}
+			case 10:
+			case 11:
+			case 12:
+			{
+				this.totalPlayer += 10;
+				break;
+			}
+			default:
+			{
+				this.totalPlayer += num + 1;
+				break;
+			}
+		}
+		if (this.totalPlayer > 21 && this.asNumberPlayer >= 1)
+		{
+			this.asNumberPlayer--;
+			this.totalPlayer -= 10;
+		}
+	}
+
+	addValueCroupier( num:number )
 	{
 		switch(num)
 		{
@@ -147,10 +203,6 @@ export class Card3D{
 			this.asNumberCroupier--;
 			this.totalCroupier -= 10;
 		}
-		if (this.totalCroupier >= 17)
-			return false;
-		else
-			return true;
 	}
 
 	async shuffleTexture(scene:Babylon.Scene)
@@ -170,27 +222,33 @@ export class Card3D{
 			this._deck[y].textures!.position = new Babylon.Vector3(100, 50, 20 * y);
 			this._deck[y].textures!.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
 		}
-		let y:number = this.lauchAnim();
-		this.anim.createAnimeCard(this._deck[y].textures!, y);
-		await this.startAnim(scene, y, false);
-		let i:number = this.lauchAnimDealer();
-		this.anim.createAnimeCardCroupier(this._deck[i].textures!, i);
-		await this.startAnim(scene, i, true);
-		y = this.lauchAnim();
-		this.anim.createAnimeCard(this._deck[y].textures!, y);
-		await this.startAnim(scene, y, false);
-		i = this.lauchAnimDealer();
-		this.anim.createAnimeHidden(this._deck[i].textures!, i);
-		await this.startAnim(scene, i, false);
-		this.anim.returnCard(this._deck[i].textures!, i);
-		await this.startAnim(scene, i, true);
+		await this.lauchAnim(scene, true, false);
+		await this.lauchAnimDealer(scene, true, true, 0);
+		await this.lauchAnim(scene, true, false);
+		await this.lauchAnimDealer(scene, false, true, 1);
+		await this.lauchAnimDealer(scene, true, true, 2);
 	}
 
-	async startAnim(scene:Babylon.Scene, num:number, bo:boolean)
+	async play(scene: Babylon.Scene, num:number, toAdd:boolean, croupierCard:boolean)
+	{
+		await this.startAnim(scene, num);
+		if (toAdd)
+		{
+			if (croupierCard)
+			{
+				this.addValueCroupier(this._deck[num].value);
+				console.log("croupier : " + this.totalCroupier);
+			}
+			else
+			{
+				this.addValuePlayer(this._deck[num].value);
+				console.log("Player : " + this.totalPlayer);
+			}
+		}
+	}
+
+	async startAnim(scene:Babylon.Scene, num:number)
 	{
 		await scene.beginAnimation(this._deck[num].textures, 0, 90, false).waitAsync();
-		if (bo)
-			this.addValueCroupier(this._deck[num].value);
-		console.log(this.totalCroupier);
 	}
 }

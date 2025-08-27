@@ -4,11 +4,6 @@ import * as Babylon from "@babylonjs/core"
 import { Card3D } from './class3D'
 import { Animations } from './Animation'
 
-function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-}
-
-
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 	const engine = new Babylon.Engine(canvas, true);
@@ -46,13 +41,22 @@ window.addEventListener("DOMContentLoaded", () => {
 	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
 		async function (evt){
-			const i:number = deck.lauchAnim();
-			let anim = new Animations();
-			if (deck.totalCroupier < 17)
-			{
-				anim.createAnimeCardCroupier(deck._deck[i].textures!, i);
-				deck.startAnim(scene, i, true);
-			}
+			await deck.lauchAnim(scene, true, false);
+		}
+	));
+
+	const validate = Babylon.MeshBuilder.CreateBox("affirmative", { 
+		width: 10,
+		height: 10,
+		depth: 10
+	}, scene);
+
+	validate.position = new Babylon.Vector3(100, 100, 100);
+	validate.actionManager = new Babylon.ActionManager(scene);
+	validate.actionManager.registerAction(new Babylon.ExecuteCodeAction(
+		Babylon.ActionManager.OnPickTrigger,
+		async function (evt){
+			await deck.lauchAnimDealer(scene, true, true, 0);
 		}
 	));
 
