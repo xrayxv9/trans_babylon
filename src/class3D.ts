@@ -34,8 +34,7 @@ export class Card3D{
 	public meshes: Babylon.AbstractMesh[];
 	public totalPlayer:number;
 	public totalCroupier:number;
-	private asNumberCroupier;
-	private asNumberPlayer;
+	private totalCards;
 
     constructor() {
         this._bool = Array.from({ length: 4 }, () => Array(13).fill(false));
@@ -46,11 +45,15 @@ export class Card3D{
 		this.anim = new Animations();
 		this.totalPlayer = 0;
 		this.totalCroupier = 0;
-		this.asNumberCroupier = 0;
-		this.asNumberPlayer = 0;
+		this.totalCards = 0;
 
 		this.shuffle();
     }
+
+	getCards():number
+	{
+		return this.totalCards;
+	}
 
 	setTexture( mesh:Babylon.AbstractMesh, i:number)
 	{
@@ -65,16 +68,7 @@ export class Card3D{
 		return 0;
 	}
 
-	async lauchAnim(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean)
-	{
-		let count:number;
-
-		count = this.count;
-		this.count++;
-		this.anim.createAnimeCard(this._deck[count + this.countDealer].textures!, count);
-		await this.play(scene, count + this.countDealer, toAdd, croupierCard);
-		return count;
-	}
+	
 
 	async lauchAnimDealer(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean, animNumber:number)
 	{
@@ -212,8 +206,6 @@ export class Card3D{
 		this.countDealer = 0;
 		this.totalCroupier = 0;
 		this.totalPlayer = 0;
-		this.asNumberCroupier = 0;
-		this.asNumberPlayer = 0;
 
 		for (let y:number = 0; y < 52; y++)
 		{
@@ -229,19 +221,19 @@ export class Card3D{
 		await this.lauchAnimDealer(scene, true, true, 2);
 	}
 
-	async play(scene: Babylon.Scene, num:number, toAdd:boolean, croupierCard:boolean)
+	async play(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean)
 	{
-		await this.startAnim(scene, num);
+		await this.startAnim(scene, this.totalCards);
 		if (toAdd)
 		{
 			if (croupierCard)
 			{
-				this.addValueCroupier(this._deck[num].value);
+				this.addValueCroupier(this._deck[this.totalCards].value);
 				console.log("croupier : " + this.totalCroupier);
 			}
 			else
 			{
-				this.addValuePlayer(this._deck[num].value);
+				this.addValuePlayer(this._deck[this.totalCards].value);
 				console.log("Player : " + this.totalPlayer);
 			}
 		}
