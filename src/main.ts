@@ -2,7 +2,9 @@ import './style.css'
 import "@babylonjs/loaders"
 import * as Babylon from "@babylonjs/core"
 import { Card3D } from './class3D'
-import { Animations } from './Animation'
+import { Player } from './Player'
+import { Croupier } from './Croupier'
+import { Game } from './Game'
 
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -27,8 +29,11 @@ window.addEventListener("DOMContentLoaded", () => {
 	const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
 	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, async function(meshes) {
 		deck.meshes = meshes;
-		await deck.shuffleTexture(scene);
+		await deck.shuffleTexture();
 	});
+	const player:Player = new Player(deck); 
+	const croupier:Croupier = new Croupier(deck);
+	const game:Game = new Game(player, croupier, deck, scene);
 
 	const box = Babylon.MeshBuilder.CreateBox("affirmative", { 
 		width: 10,
@@ -41,22 +46,8 @@ window.addEventListener("DOMContentLoaded", () => {
 	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
 		async function (evt){
-			await deck.lauchAnim(scene, true, false);
-		}
-	));
-
-	const validate = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 10,
-		height: 10,
-		depth: 10
-	}, scene);
-
-	validate.position = new Babylon.Vector3(100, 100, 100);
-	validate.actionManager = new Babylon.ActionManager(scene);
-	validate.actionManager.registerAction(new Babylon.ExecuteCodeAction(
-		Babylon.ActionManager.OnPickTrigger,
-		async function (evt){
-			await deck.lauchAnimDealer(scene, true, true, 0);
+			if (player.canPickCard())
+				await game.playerPicks();
 		}
 	));
 
@@ -71,7 +62,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	reset.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
 		async function (evt){
-			await deck.shuffleTexture(scene);
+			await game.reset();
 		}
 	));
 

@@ -1,34 +1,8 @@
 import * as Babylon from "@babylonjs/core";
-import type { AbstractMesh } from "babylonjs";
-import { Animations } from './Animation'
-
-type Card = {
-	value: number;
-	color: number;
-	texture: number;
-	textures: Babylon.AbstractMesh | null;
-};
-
-function Ale(num: number): number
-{
-	return Math.floor(Math.random() * num);
-}
-
-function check(toCheck: boolean[][])
-{
-	for (let i:number = 0; i <= 3; i++)
-	{
-		for (let y:number = 0; y <= 13; y++)
-			if (toCheck[i][y] == false)
-				return true;
-	}
-	return false;
-}
+import type { Card } from './utils.ts'
+import { Ale, check } from './utils.ts'
 
 export class Card3D{
-	private count: number;
-	private anim: Animations;
-	private countDealer: number;
     private _bool: boolean[][];
     public _deck: Card[];
 	public meshes: Babylon.AbstractMesh[];
@@ -40,9 +14,6 @@ export class Card3D{
         this._bool = Array.from({ length: 4 }, () => Array(13).fill(false));
 		this._deck = [];
 		this.meshes = [];
-		this.count = 0;
-		this.countDealer = 0;
-		this.anim = new Animations();
 		this.totalPlayer = 0;
 		this.totalCroupier = 0;
 		this.totalCards = 0;
@@ -66,40 +37,6 @@ export class Card3D{
 			}
 		}
 		return 0;
-	}
-
-	
-
-	async lauchAnimDealer(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean, animNumber:number)
-	{
-		let count:number;
-		let whichCard;
-
-		count = this.countDealer;
-		whichCard = 3;
-		switch (animNumber)
-		{
-			case 0:
-			{
-				this.anim.createAnimeCardCroupier(this._deck[count + this.count].textures!, count);
-				this.countDealer++;
-				whichCard = count + this.count; 
-				break;
-			}
-			case 1:
-			{
-				this.anim.createAnimeHidden(this._deck[3].textures!, 1);
-				this.countDealer++;
-				break ;
-			}
-			case 2:
-			{
-				this.anim.returnCard(this._deck[3].textures!, 1);
-				break ;
-			}
-		}
-		await this.play(scene, whichCard, toAdd, croupierCard);
-		return count;
 	}
 
 	shuffle()
@@ -135,78 +72,9 @@ export class Card3D{
 		});
 	}
 
-	addValuePlayer( num:number )
-	{
-		switch(num)
-		{
-			case 0:{
-				if (this.totalPlayer + 11 < 21)
-					this.totalPlayer += 11;
-				else
-					this.totalPlayer += 1;
-				this.asNumberPlayer += 1;
-				break ;
-			}
-			case 10:
-			case 11:
-			case 12:
-			{
-				this.totalPlayer += 10;
-				break;
-			}
-			default:
-			{
-				this.totalPlayer += num + 1;
-				break;
-			}
-		}
-		if (this.totalPlayer > 21 && this.asNumberPlayer >= 1)
-		{
-			this.asNumberPlayer--;
-			this.totalPlayer -= 10;
-		}
-	}
-
-	addValueCroupier( num:number )
-	{
-		switch(num)
-		{
-			case 0:{
-				if (this.totalCroupier + 11 < 21)
-					this.totalCroupier += 11;
-				else
-					this.totalCroupier += 1;
-				this.asNumberCroupier += 1;
-				break ;
-			}
-			case 10:
-			case 11:
-			case 12:
-			{
-				this.totalCroupier += 10;
-				break;
-			}
-			default:
-			{
-				this.totalCroupier += num + 1;
-				break;
-			}
-		}
-		if (this.totalCroupier > 21 && this.asNumberCroupier >= 1)
-		{
-			this.asNumberCroupier--;
-			this.totalCroupier -= 10;
-		}
-	}
-
-	async shuffleTexture(scene:Babylon.Scene)
+	async shuffleTexture()
 	{
 		this.shuffle();
-		this.count = 0;
-		this.countDealer = 0;
-		this.totalCroupier = 0;
-		this.totalPlayer = 0;
-
 		for (let y:number = 0; y < 52; y++)
 		{
 			this._deck[y].textures!.renderingGroupId = 52 - y;
@@ -214,33 +82,10 @@ export class Card3D{
 			this._deck[y].textures!.position = new Babylon.Vector3(100, 50, 20 * y);
 			this._deck[y].textures!.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
 		}
-		await this.lauchAnim(scene, true, false);
-		await this.lauchAnimDealer(scene, true, true, 0);
-		await this.lauchAnim(scene, true, false);
-		await this.lauchAnimDealer(scene, false, true, 1);
-		await this.lauchAnimDealer(scene, true, true, 2);
 	}
 
-	async play(scene: Babylon.Scene, toAdd:boolean, croupierCard:boolean)
+	async startAnim(scene:Babylon.Scene, mesh:Babylon.AbstractMesh)
 	{
-		await this.startAnim(scene, this.totalCards);
-		if (toAdd)
-		{
-			if (croupierCard)
-			{
-				this.addValueCroupier(this._deck[this.totalCards].value);
-				console.log("croupier : " + this.totalCroupier);
-			}
-			else
-			{
-				this.addValuePlayer(this._deck[this.totalCards].value);
-				console.log("Player : " + this.totalPlayer);
-			}
-		}
-	}
-
-	async startAnim(scene:Babylon.Scene, num:number)
-	{
-		await scene.beginAnimation(this._deck[num].textures, 0, 90, false).waitAsync();
+		await scene.beginAnimation(mesh, 0, 90, false).waitAsync();
 	}
 }
