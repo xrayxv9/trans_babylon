@@ -1,13 +1,12 @@
 import * as Babylon from "@babylonjs/core";
-import { Card3D } from './class3D'
-import type { Card } from './utils'
-import { Animations } from './Animation'
+import { Card3D } from './class3D.ts'
+import type { Card } from './utils.ts'
+import { Animations } from './Animation.ts'
 
 
 export class Player
 {
 	private count: number;
-	private countCards: number;
 	private asNumber: number;
 	private money: number;
 	private anim: Animations;
@@ -17,7 +16,6 @@ export class Player
 	constructor(cards: Card3D)
 	{
 		this.count = 0;
-		this.countCards = 0;
 		this.asNumber = 0;
 		this.pickedCardNumber = 0;
 		// faire call backend
@@ -28,6 +26,12 @@ export class Player
 
 	canPickCard():boolean
 	{
+		if (this.count > 21 && this.asNumber >= 1)
+		{
+			this.asNumber--;
+			this.count -= 10;
+		}
+		console.log("player amount : " + this.count);
 		if ((this.pickedCardNumber == 2 && this.count == 21) || this.count > 21)
 		{
 			return false;
@@ -74,14 +78,18 @@ export class Player
 
 	async lauchAnim(scene: Babylon.Scene, mesh:Babylon.AbstractMesh)
 	{
-		this.anim.createAnimeCard(mesh, this.countCards);
+		this.anim.createAnimeCard(mesh, this.pickedCardNumber);
 		await this.deck.startAnim(scene, mesh);
+	}
+
+	getCount():number
+	{
+		return this.count;
 	}
 
 	reset(): void
 	{	
 		this.count = 0;
 		this.pickedCardNumber = 0;
-		this.countCards = 0;
 	}
 }

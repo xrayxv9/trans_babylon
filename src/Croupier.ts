@@ -1,8 +1,8 @@
 import * as Babylon from "@babylonjs/core";
-import { Card3D } from './class3D'
-import type { Card } from './utils'
-import { hidden, basic, show } from './utils'
-import { Animations } from './Animation'
+import { Card3D } from './class3D.ts'
+import type { Card } from './utils.ts'
+import { hidden, basic, show } from './utils.ts'
+import { Animations } from './Animation.ts'
 
 
 export class Croupier
@@ -24,7 +24,12 @@ export class Croupier
 
 	canPickCard(): boolean
 	{
-		if ((this.pickedCardNumber == 2 && this.count == 21) || this.count > 21)
+		if (this.count > 21 && this.asNumber >= 1)
+		{
+			this.count -= 10;
+			this.asNumber--;
+		}
+		if ((this.pickedCardNumber == 2 && this.count == 17) || this.count > 17)
 		{
 			return false;
 		}
@@ -42,7 +47,6 @@ export class Croupier
 
 		if (!this.canPickCard())
 		{
-			// ecrire non sur le jeu
 			return ;
 		}
 		card = this.deck._deck[this.deck.getCards()];
@@ -76,17 +80,17 @@ export class Croupier
 	async lauchAnim(scene: Babylon.Scene, mesh:Babylon.AbstractMesh, animNumber:number)
 	{
 		if (animNumber == hidden)
-			this.anim.createAnimeHidden(mesh, 3);
+			this.anim.createAnimeHidden(mesh, 2);
 		else if (animNumber == show)
-			this.anim.returnCard(mesh, 3);
+			this.anim.returnCard(mesh, 2);
 		else if (animNumber == basic)
 			this.anim.createAnimeCardCroupier(mesh, this.pickedCardNumber);
 		await this.deck.startAnim(scene, mesh);
 	}
 
-	async returnsCard()
+	getCount():number
 	{
-		
+		return this.count;
 	}
 
 	reset():void

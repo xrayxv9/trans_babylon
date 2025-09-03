@@ -1,7 +1,4 @@
 import * as Babylon from "@babylonjs/core";
-import { Card3D } from './class3D'
-import { Player } from './Player'
-import { Croupier } from './Croupier'
 
 export type Card = {
 	value: number;

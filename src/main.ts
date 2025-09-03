@@ -1,10 +1,10 @@
 import './style.css'
 import "@babylonjs/loaders"
 import * as Babylon from "@babylonjs/core"
-import { Card3D } from './class3D'
-import { Player } from './Player'
-import { Croupier } from './Croupier'
-import { Game } from './Game'
+import { Card3D } from './class3D.ts'
+import { Player } from './Player.ts'
+import { Croupier } from './Croupier.ts'
+import { Game } from './Game.ts'
 
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	const createScene = () =>
 	{
 		const scene = new Babylon.Scene(engine);
-		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,150,-350), scene);
+		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,0,0), scene);
 		camera.fov = 1.2;
 
 		camera.beta += -0.11;
@@ -24,9 +24,10 @@ window.addEventListener("DOMContentLoaded", () => {
 		return { scene, camera };
 	}
 
+
 	const { scene } = createScene();
 	const deck = new Card3D();
-	const mesh = Babylon.SceneLoader.ImportMesh(null, "./", "blackjack_table.glb", scene);
+	const table = Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
 	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, async function(meshes) {
 		deck.meshes = meshes;
 		await deck.shuffleTexture();
@@ -63,8 +64,26 @@ window.addEventListener("DOMContentLoaded", () => {
 		Babylon.ActionManager.OnPickTrigger,
 		async function (evt){
 			await game.reset();
+			await game.lauchGame();
 		}
 	));
+
+	const finish = Babylon.MeshBuilder.CreateBox("affirmative", { 
+		width: 10,
+		height: 10,
+		depth: 10
+	}, scene);
+
+	finish.position = new Babylon.Vector3(100, 200, 100);
+	finish.actionManager = new Babylon.ActionManager(scene);
+	finish.actionManager.registerAction(new Babylon.ExecuteCodeAction(
+		Babylon.ActionManager.OnPickTrigger,
+		async function (evt){
+			await game.croupierTurn();
+		}
+	));
+
+
 
 	engine.runRenderLoop(() => {
 		scene.render();

@@ -6,16 +6,12 @@ export class Card3D{
     private _bool: boolean[][];
     public _deck: Card[];
 	public meshes: Babylon.AbstractMesh[];
-	public totalPlayer:number;
-	public totalCroupier:number;
 	private totalCards;
 
     constructor() {
         this._bool = Array.from({ length: 4 }, () => Array(13).fill(false));
 		this._deck = [];
 		this.meshes = [];
-		this.totalPlayer = 0;
-		this.totalCroupier = 0;
 		this.totalCards = 0;
 
 		this.shuffle();
@@ -24,6 +20,10 @@ export class Card3D{
 	getCards():number
 	{
 		return this.totalCards;
+	}
+	increaseCards():void
+	{
+		this.totalCards++;
 	}
 
 	setTexture( mesh:Babylon.AbstractMesh, i:number)
@@ -78,8 +78,8 @@ export class Card3D{
 		for (let y:number = 0; y < 52; y++)
 		{
 			this._deck[y].textures!.renderingGroupId = 52 - y;
-			this._deck[y].textures!.scaling = new Babylon.Vector3(300, 10, 300);
-			this._deck[y].textures!.position = new Babylon.Vector3(100, 50, 20 * y);
+			this._deck[y].textures!.scaling = new Babylon.Vector3(5, 5, 5);
+			this._deck[y].textures!.position = new Babylon.Vector3(12000, 3000, 2500 + y);
 			this._deck[y].textures!.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
 		}
 	}
