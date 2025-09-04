@@ -17,6 +17,7 @@ export class Game
 		this.croupier = croupier;
 		this.deck = deck;
 		this.scene = scene;
+		this.scene.clearColor = new Babylon.Color4(0, 0.130, 0.121, 1);
 	}
 
 	async lauchGame()
@@ -39,7 +40,6 @@ export class Game
 	async croupierPicks()
 	{
 		await this.croupier.pickCard(this.scene, basic);
-		console.log("Croupier amount : " + this.player.getCount());
 		this.deck.increaseCards();
 	}
 
@@ -52,10 +52,9 @@ export class Game
 	async playerPicks()
 	{
 		await this.player.pickCard(this.scene);
-		console.log("player amount : " + this.player.getCount());
+		this.deck.increaseCards();
 		if (!this.player.canPickCard())
 			await this.croupierTurn();
-		this.deck.increaseCards();
 	}
 
 	async croupierTurn()
@@ -86,7 +85,6 @@ export class Game
 		mat.transparencyMode = Babylon.Material.MATERIAL_ALPHABLEND;
 
 		plane.material = mat;
-		this.scene.clearColor = new Babylon.Color4(0, 0.130, 0.121, 1);
 	}
 
 	decideWinner()

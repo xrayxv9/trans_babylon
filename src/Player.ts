@@ -43,10 +43,7 @@ export class Player
 		let card:Card;
 
 		if (!this.canPickCard())
-		{
-			// ecrire non sur le jeu
 			return ;
-		}
 		card = this.deck._deck[this.deck.getCards()];
 		switch(card.value)
 		{
