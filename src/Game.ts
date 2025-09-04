@@ -39,6 +39,7 @@ export class Game
 	async croupierPicks()
 	{
 		await this.croupier.pickCard(this.scene, basic);
+		console.log("Croupier amount : " + this.player.getCount());
 		this.deck.increaseCards();
 	}
 
@@ -51,6 +52,7 @@ export class Game
 	async playerPicks()
 	{
 		await this.player.pickCard(this.scene);
+		console.log("player amount : " + this.player.getCount());
 		if (!this.player.canPickCard())
 			await this.croupierTurn();
 		this.deck.increaseCards();
@@ -68,11 +70,11 @@ export class Game
 	
 	write(texte: string)
 	{
-		const plane = Babylon.MeshBuilder.CreatePlane("plane", {width: 400, height: 200}, this.scene);
+		const plane = Babylon.MeshBuilder.CreatePlane("plane", {width: 2, height: 1}, this.scene);
 
 		const dynamicTexture = new Babylon.DynamicTexture("dynamic texture", {width:512, height:256}, this.scene, false);
 
-		plane.position = new Babylon.Vector3(-200, 100, 100);
+		plane.position = new Babylon.Vector3(-5, 3, 3);
 		dynamicTexture.drawText(texte, 75, 135, "bold 40px Arial", "white", "red");
 
 		const mat = new Babylon.StandardMaterial("mat", this.scene);
@@ -84,7 +86,7 @@ export class Game
 		mat.transparencyMode = Babylon.Material.MATERIAL_ALPHABLEND;
 
 		plane.material = mat;
-		this.scene.clearColor = new Babylon.Color4(0, 130, 121, 1);
+		this.scene.clearColor = new Babylon.Color4(0, 0.130, 0.121, 1);
 	}
 
 	decideWinner()
@@ -93,30 +95,15 @@ export class Game
 		let player:number = this.player.getCount();
 
 		if (player > 21)
-		{
 			this.write("Vous avez burst !");
-			return ;
-		}
 		else if (croupier > 21)
-		{
 			this.write("Vous avez gagne !");
-			return ;
-		}
 		else if (croupier == player)
-		{
 			this.write("Egalite !");
-			return ;
-		}
 		else if (croupier > player)
-		{
 			this.write("Vous avez Perdu !");
-			return ;
-		}
 		else 
-		{
 			this.write("Vous avez gagne !");
-			return ;
-		}
 	}
 
 }

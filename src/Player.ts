@@ -31,7 +31,6 @@ export class Player
 			this.asNumber--;
 			this.count -= 10;
 		}
-		console.log("player amount : " + this.count);
 		if ((this.pickedCardNumber == 2 && this.count == 21) || this.count > 21)
 		{
 			return false;

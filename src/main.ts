@@ -14,7 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	const createScene = () =>
 	{
 		const scene = new Babylon.Scene(engine);
-		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,0,0), scene);
+		const camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,3, -1), scene);
 		camera.fov = 1.2;
 
 		camera.beta += -0.11;
@@ -27,7 +27,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	const { scene } = createScene();
 	const deck = new Card3D();
-	const table = Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
+	Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
 	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, async function(meshes) {
 		deck.meshes = meshes;
 		await deck.shuffleTexture();
@@ -37,12 +37,12 @@ window.addEventListener("DOMContentLoaded", () => {
 	const game:Game = new Game(player, croupier, deck, scene);
 
 	const box = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 10,
-		height: 10,
-		depth: 10
+		width: 0.2,
+		height: 0.2,
+		depth: 0.2
 	}, scene);
 
-	box.position = new Babylon.Vector3(0, 100, 100);
+	box.position = new Babylon.Vector3(0, 2, 2);
 	box.actionManager = new Babylon.ActionManager(scene);
 	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
@@ -53,12 +53,12 @@ window.addEventListener("DOMContentLoaded", () => {
 	));
 
 	const reset = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 10,
-		height: 10,
-		depth: 10
+		width: 0.2,
+		height: 0.2,
+		depth: 0.2
 	}, scene);
 
-	reset.position = new Babylon.Vector3(0, 200, 100);
+	reset.position = new Babylon.Vector3(0, 4, 2);
 	reset.actionManager = new Babylon.ActionManager(scene);
 	reset.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,
@@ -69,12 +69,12 @@ window.addEventListener("DOMContentLoaded", () => {
 	));
 
 	const finish = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 10,
-		height: 10,
-		depth: 10
+		width: 0.2,
+		height: 0.2,
+		depth: 0.2
 	}, scene);
 
-	finish.position = new Babylon.Vector3(100, 200, 100);
+	finish.position = new Babylon.Vector3(1, 4, 2);
 	finish.actionManager = new Babylon.ActionManager(scene);
 	finish.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 		Babylon.ActionManager.OnPickTrigger,

@@ -65,7 +65,7 @@ export class Card3D{
 		this.meshes.map((mesh, i) => {
 			if (i == 0) 
 			{
-				mesh.position = new Babylon.Vector3(125, 25, -25);
+				mesh.position = new Babylon.Vector3(0, 2.228, 0);
 				return ;
 			}
 			this.setTexture(mesh, i - 1);
@@ -78,8 +78,8 @@ export class Card3D{
 		for (let y:number = 0; y < 52; y++)
 		{
 			this._deck[y].textures!.renderingGroupId = 52 - y;
-			this._deck[y].textures!.scaling = new Babylon.Vector3(5, 5, 5);
-			this._deck[y].textures!.position = new Babylon.Vector3(12000, 3000, 2500 + y);
+			this._deck[y].textures!.scaling = new Babylon.Vector3(2.5,2.5,2.5);
+			this._deck[y].textures!.position = new Babylon.Vector3(-50 - (this._deck[y].value* 11.1), -30, ((-this._deck[y].color * 15) + 40) + y / 10);
 			this._deck[y].textures!.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
 		}
 	}
