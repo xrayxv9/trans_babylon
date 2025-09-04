@@ -29,7 +29,7 @@ export class Animations
 	createAnimeCard(mesh:Babylon.AbstractMesh, countCards:number)
 	{
 		const startPos = mesh.position.clone();
-		const endPos = new Babylon.Vector3(17000 - (countCards * 1000), -20000, 700 - (countCards * 10));
+		const endPos = startPos.add(new Babylon.Vector3(175 - countCards * 10, -175, 0));
 
 		const keys = [
 			{ "frame": 0, value:startPos },
@@ -57,7 +57,7 @@ export class Animations
 	createAnimeCardCroupier(mesh:Babylon.AbstractMesh, countCards:number)
 	{
 		const startPos = mesh.position.clone();
-		const endPos = new Babylon.Vector3(14000 - (countCards * 1000), -9000, 700 - (countCards * 10));
+		const endPos = startPos.add(new Babylon.Vector3(150- countCards * 10, -75, 0));
 
 		const keys = [
 			{ "frame": 0, value:startPos },
@@ -85,7 +85,7 @@ export class Animations
 	createAnimeHidden(mesh:Babylon.AbstractMesh, countCards:number)
 	{
 		const startPos = mesh.position.clone();
-		const endPos = new Babylon.Vector3(14000 - (countCards * 1000), -9000, 700 - (countCards * 10));
+		const endPos = startPos.add(new Babylon.Vector3(150- countCards * 10, -75, 0));
 
 		const keys = [
 			{ "frame": 0, value:startPos },
