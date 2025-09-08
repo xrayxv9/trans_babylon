@@ -17,6 +17,15 @@ export class Card3D{
 		this.shuffle();
     }
 
+	async init(scene:Babylon.Scene)
+	{
+		Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
+		Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, async (meshes) => {
+			this.meshes = meshes;
+			await this.shuffleTexture();
+		});
+	}
+
 	getCards():number
 	{
 		return this.totalCards;

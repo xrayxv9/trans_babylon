@@ -4,7 +4,9 @@ import * as Babylon from "@babylonjs/core"
 import { Card3D } from './class3D.ts'
 import { Player } from './Player.ts'
 import { Croupier } from './Croupier.ts'
-import { Game } from './Game.ts'
+import { BlackJack } from './BlackJack.ts'
+import { Button } from './Button.ts'
+import { playerPicks, dealerTurn, playAgain, stopHere } from './utils.ts'
 
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -26,64 +28,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 	const { scene } = createScene();
-	const deck = new Card3D();
 	Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
-	Babylon.SceneLoader.ImportMesh(null, "./", "playing_cards.glb", scene, async function(meshes) {
-		deck.meshes = meshes;
-		await deck.shuffleTexture();
-	});
-	const player:Player = new Player(deck); 
-	const croupier:Croupier = new Croupier(deck);
-	const game:Game = new Game(player, croupier, deck, scene);
+	const game:BlackJack = new BlackJack(scene);
+	game.allInit();
 
-	const box = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 0.2,
-		height: 0.2,
-		depth: 0.2
-	}, scene);
-
-	box.position = new Babylon.Vector3(0, 2, 2);
-	box.actionManager = new Babylon.ActionManager(scene);
-	box.actionManager.registerAction(new Babylon.ExecuteCodeAction(
-		Babylon.ActionManager.OnPickTrigger,
-		async function (evt){
-			if (player.canPickCard())
-				await game.playerPicks();
-		}
-	));
-
-	const reset = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 0.2,
-		height: 0.2,
-		depth: 0.2
-	}, scene);
-
-	reset.position = new Babylon.Vector3(0, 4, 2);
-	reset.actionManager = new Babylon.ActionManager(scene);
-	reset.actionManager.registerAction(new Babylon.ExecuteCodeAction(
-		Babylon.ActionManager.OnPickTrigger,
-		async function (evt){
-			await game.reset();
-			await game.lauchGame();
-		}
-	));
-
-	const finish = Babylon.MeshBuilder.CreateBox("affirmative", { 
-		width: 0.2,
-		height: 0.2,
-		depth: 0.2
-	}, scene);
-
-	finish.position = new Babylon.Vector3(1, 4, 2);
-	finish.actionManager = new Babylon.ActionManager(scene);
-	finish.actionManager.registerAction(new Babylon.ExecuteCodeAction(
-		Babylon.ActionManager.OnPickTrigger,
-		async function (evt){
-			await game.croupierTurn();
-		}
-	));
-
-
+	const playerPicking = new Button(0, 2, playerPicks, "playerPicks", scene, game);
+	const resetGame = new Button(0, 4, playAgain, "playerPicks", scene, game);
+	const dealerPlaying = new Button(1, 4, dealerTurn, "playerPicks", scene, game);
 
 	engine.runRenderLoop(() => {
 		scene.render();

@@ -4,65 +4,74 @@ import { Player } from './Player.ts'
 import { Croupier } from './Croupier.ts'
 import { basic, hidden, show } from './utils.ts'
 
-export class Game
+export class BlackJack
 {
-	private player:Player;
-	private croupier:Croupier;
-	private deck:Card3D;
+	private player:Player | null;
+	private dealer:Croupier | null;
+	private deck:Card3D | null;
 	private scene:Babylon.Scene;
 
-	constructor(player:Player, croupier:Croupier, deck:Card3D, scene:Babylon.Scene)
+	constructor(scene:Babylon.Scene)
 	{
-		this.player = player;
-		this.croupier = croupier;
-		this.deck = deck;
+		this.player = null;
+		this.dealer = null;
+		this.deck = null;
 		this.scene = scene;
 		this.scene.clearColor = new Babylon.Color4(0, 0.130, 0.121, 1);
+	}
+	
+	async allInit ()
+	{
+		this.deck = new Card3D();
+		await this.deck.init(this.scene);
+		this.player = new Player(this.deck);
+		this.dealer = new Croupier(this.deck);
 	}
 
 	async lauchGame()
 	{
-		await this.deck.shuffleTexture();
+		await this.reset();
+		await this.deck!.shuffleTexture();
 		await this.playerPicks();
-		await this.croupierPicks();
+		await this.dealerPicks();
 		await this.playerPicks();
-		await this.croupier.pickCard(this.scene, hidden);
-		this.deck.increaseCards();
+		await this.dealer!.pickCard(this.scene, hidden);
+		this.deck!.increaseCards();
 	}
 
 	async reset()
 	{
-		this.player.reset();
-		this.croupier.reset();
-		await this.deck.shuffleTexture();
+		this.player!.reset();
+		this.dealer!.reset();
+		await this.deck!.shuffleTexture();
 	}
 
-	async croupierPicks()
+	async dealerPicks()
 	{
-		await this.croupier.pickCard(this.scene, basic);
-		this.deck.increaseCards();
+		await this.dealer!.pickCard(this.scene, basic);
+		this.deck!.increaseCards();
 	}
 
-	async croupierReturns()
+	async dealerReturns()
 	{
-		this.deck.increaseCards();
-		await this.croupier.pickCard(this.scene, show);
+		this.deck!.increaseCards();
+		await this.dealer!.pickCard(this.scene, show);
 	}
 
 	async playerPicks()
 	{
-		await this.player.pickCard(this.scene);
-		this.deck.increaseCards();
-		if (!this.player.canPickCard())
-			await this.croupierTurn();
+		await this.player!.pickCard(this.scene);
+		this.deck!.increaseCards();
+		if (!this.player!.canPickCard())
+			await this.dealerTurn();
 	}
 
-	async croupierTurn()
+	async dealerTurn()
 	{
-		await this.croupier.lauchAnim(this.scene, this.croupier.getDeck()._deck[3].textures!, show);
-		while (this.croupier.getCount() < 17)
+		await this.dealer!.lauchAnim(this.scene, this.dealer!.getDeck()._deck[3].textures!, show);
+		while (this.dealer!.getCount() < 17)
 		{
-			await this.croupierPicks();
+			await this.dealerPicks();
 		}
 		this.decideWinner();
 	}
@@ -89,16 +98,16 @@ export class Game
 
 	decideWinner()
 	{
-		let croupier:number = this.croupier.getCount();
-		let player:number = this.player.getCount();
+		let dealer:number = this.dealer!.getCount();
+		let player:number = this.player!.getCount();
 
 		if (player > 21)
 			this.write("Vous avez burst !");
-		else if (croupier > 21)
+		else if (dealer > 21)
 			this.write("Vous avez gagne !");
-		else if (croupier == player)
+		else if (dealer == player)
 			this.write("Egalite !");
-		else if (croupier > player)
+		else if (dealer > player)
 			this.write("Vous avez Perdu !");
 		else 
 			this.write("Vous avez gagne !");
