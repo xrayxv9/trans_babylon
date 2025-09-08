@@ -3,6 +3,8 @@ import { Card3D } from './class3D.ts'
 import { Player } from './Player.ts'
 import { Croupier } from './Croupier.ts'
 import { basic, hidden, show } from './utils.ts'
+import { Button } from './Button.ts'
+import { playerPicksDefine, dealerTurnDefine, playAgainDefine } from './utils.ts'
 
 export class BlackJack
 {
@@ -11,6 +13,11 @@ export class BlackJack
 	private deck:Card3D | null;
 	private scene:Babylon.Scene;
 
+	private playerPicksButton: Button | null;
+	// private playAgainButton: Button;
+	// private stopPlayingButton: Button;
+	// private stopTurnButton: Button;
+
 	constructor(scene:Babylon.Scene)
 	{
 		this.player = null;
@@ -18,6 +25,7 @@ export class BlackJack
 		this.deck = null;
 		this.scene = scene;
 		this.scene.clearColor = new Babylon.Color4(0, 0.130, 0.121, 1);
+		this.playerPicksButton = null;
 	}
 	
 	async allInit ()
@@ -26,6 +34,10 @@ export class BlackJack
 		await this.deck.init(this.scene);
 		this.player = new Player(this.deck);
 		this.dealer = new Croupier(this.deck);
+
+				
+		this.playerPicksButton = new Button(1.6, 2.4, -1.3, playerPicksDefine, "player Picks", this.scene, this);
+
 	}
 
 	async lauchGame()
@@ -43,6 +55,7 @@ export class BlackJack
 	{
 		this.player!.reset();
 		this.dealer!.reset();
+		this.deck!.reset();
 		await this.deck!.shuffleTexture();
 	}
 

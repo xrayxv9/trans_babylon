@@ -93,6 +93,11 @@ export class Card3D{
 		}
 	}
 
+	reset()
+	{
+		this.totalCards = 0;
+	}
+
 	async startAnim(scene:Babylon.Scene, mesh:Babylon.AbstractMesh)
 	{
 		await scene.beginAnimation(mesh, 0, 90, false).waitAsync();

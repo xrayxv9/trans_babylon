@@ -6,7 +6,7 @@ import { Player } from './Player.ts'
 import { Croupier } from './Croupier.ts'
 import { BlackJack } from './BlackJack.ts'
 import { Button } from './Button.ts'
-import { playerPicks, dealerTurn, playAgain, stopHere } from './utils.ts'
+import { playerPicksDefine, dealerTurnDefine, playAgainDefine } from './utils.ts'
 
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -31,12 +31,9 @@ window.addEventListener("DOMContentLoaded", () => {
 	Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
 	const game:BlackJack = new BlackJack(scene);
 	game.allInit();
-
-	const playerPicking = new Button(0, 2, playerPicks, "playerPicks", scene, game);
-	const resetGame = new Button(0, 4, playAgain, "playerPicks", scene, game);
-	const dealerPlaying = new Button(1, 4, dealerTurn, "playerPicks", scene, game);
-
+	// engine.setHardwareScalingLevel(0.2); // ou 2
 	engine.runRenderLoop(() => {
 		scene.render();
+		console.log(engine.getFps().toFixed() + "fps");
 	});
 })

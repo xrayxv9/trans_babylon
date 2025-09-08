@@ -1,36 +1,39 @@
 import * as Babylon from "@babylonjs/core";
 import { BlackJack } from './BlackJack.ts'
-import { playerPicks, dealerTurn, playAgain } from './utils.ts'
+import { playerPicksDefine, dealerTurnDefine, playAgainDefine } from './utils.ts'
 
 export class Button
 {
 	private posX: number;
 	private posY: number;
+	private posZ: number;
 	private box: Babylon.AbstractMesh | null; 
 	private scene: Babylon.Scene;
 	private bj: BlackJack;
-	private functionToUse: number;
+	private functionNumber: number;
+	private functionToUse: () => Promise<void>;
 
-	constructor(posX:number, posY:number, numberOfFunction:number , name:string, scene: Babylon.Scene, game:BlackJack)
+	constructor(posX:number, posY:number, posZ:number, numberOfFunction:number, name:string, scene: Babylon.Scene, game:BlackJack)
 	{
 		this.posX = posX;
-		this.box = null;
 		this.posY = posY;
+		this.posZ = posZ;
+		this.box = null;
 		this.scene = scene;
 		this.bj = game;
-		this.functionToUse = numberOfFunction;
+		this.functionNumber = numberOfFunction;
 
+		this.functionToUse = this.chooseFunction();
 		Babylon.SceneLoader.ImportMesh(null, "./", "pseudo_buzzer.glb", scene, (meshes) => {
 			this.box = meshes[0];
-			this.box!.position = new Babylon.Vector3(this.posX, this.posY, 2);
+			this.box!.position = new Babylon.Vector3(this.posX, this.posY, this.posZ);
 
 			meshes.forEach(mesh => {
 				mesh.actionManager = new Babylon.ActionManager(this.scene);
 				mesh.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 					Babylon.ActionManager.OnPickTrigger,
 					async () => {
-						console.log("coucou je suis un texte");
-						await this.chooseFunction()();
+						await this.functionToUse();
 					}
 				))
 			});
@@ -40,20 +43,15 @@ export class Button
 
 	chooseFunction(): () => Promise<void>
 	{
-		console.log(this.functionToUse);
-		switch (this.functionToUse)
+		switch (this.functionNumber)
 		{
-			case playerPicks:
-				console.log("coucou playerPicks !");
+			case playerPicksDefine:
 				return this.bj.playerPicks.bind(this.bj);
-			case dealerTurn:
-				console.log("coucou dealerTurn");
+			case dealerTurnDefine:
 				return this.bj.dealerTurn.bind(this.bj);
-			case playAgain:
-				console.log("coucou playAgain");
+			case playAgainDefine:
 				return this.bj.lauchGame.bind(this.bj);
 			default:
-				console.log("coucou reset");
 				return this.bj.reset.bind(this.bj);
 		}
 	}

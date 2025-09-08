@@ -27,7 +27,7 @@ export const hidden:number = 1;
 export const show:number = 2;
 export const basic:number = 3;
 
-export const playerPicks = 1;
-export const dealerTurn = 2;
-export const playAgain = 3;
-export const stopHere = 4;
+export const playerPicksDefine = 1;
+export const dealerTurnDefine = 2;
+export const playAgainDefine = 3;
+export const stopHereDefine = 4;
