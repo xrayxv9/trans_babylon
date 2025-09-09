@@ -7,7 +7,7 @@ export class Button
 	private posX: number;
 	private posY: number;
 	private posZ: number;
-	private box: Babylon.AbstractMesh | null; 
+	private box: Babylon.AbstractMesh[] | null; 
 	private scene: Babylon.Scene;
 	private bj: BlackJack;
 	private functionNumber: number;
@@ -24,21 +24,24 @@ export class Button
 		this.functionNumber = numberOfFunction;
 
 		this.functionToUse = this.chooseFunction();
-		Babylon.SceneLoader.ImportMesh(null, "./", "pseudo_buzzer.glb", scene, (meshes) => {
-			this.box = meshes[0];
-			this.box!.position = new Babylon.Vector3(this.posX, this.posY, this.posZ);
+	}
 
-			meshes.forEach(mesh => {
-				mesh.actionManager = new Babylon.ActionManager(this.scene);
-				mesh.actionManager.registerAction(new Babylon.ExecuteCodeAction(
-					Babylon.ActionManager.OnPickTrigger,
-					async () => {
-						await this.functionToUse();
-					}
-				))
-			});
+	async init()
+	{
+		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "pseudo_buzzer.glb", this.scene);
+		this.box = result.meshes;
+
+		this.box[0].position = new Babylon.Vector3(this.posX, this.posY, this.posZ);
+		this.box.forEach(mesh => {
+			mesh.isVisible = false;
+			mesh.actionManager = new Babylon.ActionManager(this.scene);
+			mesh.actionManager.registerAction(new Babylon.ExecuteCodeAction(
+			  Babylon.ActionManager.OnPickTrigger,
+				async () => {
+					await this.functionToUse();
+				}
+			));
 		});
-
 	}
 
 	chooseFunction(): () => Promise<void>
@@ -50,7 +53,7 @@ export class Button
 			case dealerTurnDefine:
 				return this.bj.dealerTurn.bind(this.bj);
 			case playAgainDefine:
-				return this.bj.lauchGame.bind(this.bj);
+				return this.bj.restartGame.bind(this.bj);
 			default:
 				return this.bj.reset.bind(this.bj);
 		}
@@ -58,11 +61,15 @@ export class Button
 
 	show()
 	{
-		this.box!.isVisible = true;
+		this.box!.forEach(mesh => {
+			mesh.isVisible = true;
+		})
 	}
 
 	hide()
 	{
-		this.box!.isVisible = false;
+		this.box!.forEach(mesh => {
+			mesh.isVisible = false;
+		})
 	}
 }

@@ -30,10 +30,10 @@ window.addEventListener("DOMContentLoaded", () => {
 	const { scene } = createScene();
 	Babylon.SceneLoader.ImportMesh(null, "./", "new_table.glb", scene);
 	const game:BlackJack = new BlackJack(scene);
-	game.allInit();
+	game.mainGame();
 	// engine.setHardwareScalingLevel(0.2); // ou 2
 	engine.runRenderLoop(() => {
 		scene.render();
-		console.log(engine.getFps().toFixed() + "fps");
+		// console.log(engine.getFps().toFixed() + "fps");
 	});
 })
