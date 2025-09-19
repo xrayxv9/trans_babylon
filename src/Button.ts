@@ -1,6 +1,6 @@
 import * as Babylon from "@babylonjs/core";
 import { BlackJack } from './BlackJack.ts'
-import { playerPicksDefine, dealerTurnDefine, playAgainDefine } from './utils.ts'
+import { playerPicksDefine, dealerTurnDefine, playAgainDefine, green, red } from './utils.ts'
 
 export class Button
 {
@@ -26,9 +26,9 @@ export class Button
 		this.functionToUse = this.chooseFunction();
 	}
 
-	async init()
+	async init(color:Boolean)
 	{
-		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "pseudo_buzzer.glb", this.scene);
+		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", color? "redBuzz.glb" : "greenBuzz.glb", this.scene);
 		this.box = result.meshes;
 
 		this.box[0].position = new Babylon.Vector3(this.posX, this.posY, this.posZ);

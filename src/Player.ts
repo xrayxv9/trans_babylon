@@ -12,6 +12,7 @@ export class Player
 	private anim: Animations;
 	private deck: Card3D;
 	private pickedCardNumber:number;
+	private betDone;
 
 	constructor(cards: Card3D)
 	{
@@ -19,9 +20,41 @@ export class Player
 		this.asNumber = 0;
 		this.pickedCardNumber = 0;
 		// faire call backend
-		this.money = 0;
+		this.money = 100;
 		this.anim = new Animations();
-		this.deck = cards;	
+		this.deck = cards;
+		this.betDone = false;
+	}
+
+	getMoney(): number
+	{
+		return this.money;
+	}
+
+	bet(): void
+	{
+		this.betDone = true;
+	}
+
+	getBet(): boolean
+	{
+		return this.betDone;
+	}
+
+	sendMoney(amount:number): boolean
+	{
+		if (this.money - amount > 0)
+		{
+			this.money -= amount;
+			return true;
+		}
+		else
+			return false;
+	}
+
+	earnMoney(amount:number): void
+	{
+		this.money += amount;
 	}
 
 	canPickCard():boolean
@@ -38,17 +71,18 @@ export class Player
 		return true;
 	}
 
-	async pickCard(scene: Babylon.Scene)
+	async pickCard(scene: Babylon.Scene): Promise<boolean>
 	{
 		let card:Card;
 
 		if (!this.canPickCard())
-			return ;
+			return false;
 		card = this.deck._deck[this.deck.getCards()];
 		switch(card.value)
 		{
-			case 0:{
-				if (this.count + 11 < 21)
+			case 0:
+			{
+				if (this.count + 11 <= 21)
 					this.count += 11;
 				else
 					this.count += 1;
@@ -70,6 +104,9 @@ export class Player
 		}
 		this.pickedCardNumber++;
 		await this.lauchAnim(scene, card.textures!);
+		if (!this.canPickCard())
+			return false;
+		return true;
 	}
 
 	async lauchAnim(scene: Babylon.Scene, mesh:Babylon.AbstractMesh)
@@ -87,5 +124,6 @@ export class Player
 	{	
 		this.count = 0;
 		this.pickedCardNumber = 0;
+		this.betDone = false;
 	}
 }

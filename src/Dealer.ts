@@ -5,13 +5,14 @@ import { hidden, basic, show } from './utils.ts'
 import { Animations } from './Animation.ts'
 
 
-export class Croupier
+export class Dealer
 {
 	private count: number;
 	private asNumber: number;
 	private anim: Animations;
 	private deck: Card3D;
 	private pickedCardNumber:number;
+	private hiddenCard:number;
 
 	constructor(cards: Card3D)
 	{
@@ -20,6 +21,7 @@ export class Croupier
 		this.pickedCardNumber = 0;
 		this.anim = new Animations();
 		this.deck = cards;	
+		this.hiddenCard = 0;
 	}
 
 	canPickCard(): boolean
@@ -44,6 +46,7 @@ export class Croupier
 	async pickCard(scene: Babylon.Scene, animNumber:number)
 	{
 		let card:Card;
+		let value:number;
 
 		if (!this.canPickCard())
 		{
@@ -54,9 +57,9 @@ export class Croupier
 		{
 			case 0:{
 				if (this.count + 11 < 21)
-					this.count += 11;
+					value = 11;
 				else
-					this.count += 1;
+					value = 1;
 				this.asNumber += 1;
 				break ;
 			}
@@ -64,15 +67,19 @@ export class Croupier
 			case 11:
 			case 12:
 			{
-				this.count+= 10;
+				value = 10;
 				break;
 			}
 			default:
 			{
-				this.count += card.value + 1;
+				value = card.value + 1;
 				break;
 			}
 		}
+		if (animNumber != hidden)
+			this.count += value;
+		else
+			this.hiddenCard = value;
 		this.pickedCardNumber++;
 		await this.lauchAnim(scene, card.textures!, animNumber);
 	}
@@ -82,9 +89,12 @@ export class Croupier
 		if (animNumber == hidden)
 			this.anim.createAnimeHidden(mesh, 2);
 		else if (animNumber == show)
+		{
 			this.anim.returnCard(mesh, 2);
+			this.count += this.hiddenCard;
+		}
 		else if (animNumber == basic)
-			this.anim.createAnimeCardCroupier(mesh, this.pickedCardNumber);
+			this.anim.createAnimeCardDealer(mesh, this.pickedCardNumber);
 		await this.deck.startAnim(scene, mesh);
 	}
 

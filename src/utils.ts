@@ -31,3 +31,6 @@ export const playerPicksDefine = 1;
 export const dealerTurnDefine = 2;
 export const playAgainDefine = 3;
 export const stopHereDefine = 4;
+
+export const red = true;
+export const green = false;

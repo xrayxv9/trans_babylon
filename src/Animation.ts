@@ -54,7 +54,7 @@ export class Animations
 		mesh.renderingGroupId = countCards;
 	}
 
-	createAnimeCardCroupier(mesh:Babylon.AbstractMesh, countCards:number)
+	createAnimeCardDealer(mesh:Babylon.AbstractMesh, countCards:number)
 	{
 		const startPos = mesh.position.clone();
 		const endPos = startPos.add(new Babylon.Vector3(150- countCards * 10, -75, 0));
