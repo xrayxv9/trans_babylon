@@ -208,7 +208,7 @@ export class BlackJack
 		else if (dealer > 21)
 		{
 			this.write("Vous avez gagne !");
-			this.player!.earnMoney(amount * 1.25);
+			this.player!.earnMoney(amount * 2);
 		}
 		else if (dealer == player)
 		{
@@ -220,7 +220,7 @@ export class BlackJack
 		else 
 		{
 			this.write("Vous avez gagne !");
-			this.player!.earnMoney(amount * 1.25);
+			this.player!.earnMoney(amount * 2);
 		}
 		await this.sleep(3000);
 		this.mainGame();

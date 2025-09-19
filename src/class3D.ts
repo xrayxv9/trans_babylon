@@ -91,7 +91,6 @@ export class Card3D{
 			this._deck[y].textures!.position = new Babylon.Vector3(-50 - (this._deck[y].value* 11.1), -30, ((-this._deck[y].color * 15) + 40) + y / 10);
 			this._deck[y].textures!.rotation = new Babylon.Vector3(Math.PI / 2, 0, 0);
 		}
-		console.log("coucou");
 	}
 
 	reset()

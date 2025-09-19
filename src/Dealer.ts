@@ -56,7 +56,7 @@ export class Dealer
 		switch(card.value)
 		{
 			case 0:{
-				if (this.count + 11 < 21)
+				if (this.count + 11 <= 21)
 					value = 11;
 				else
 					value = 1;
