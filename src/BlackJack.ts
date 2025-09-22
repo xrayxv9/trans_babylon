@@ -7,6 +7,7 @@ import { Dealer } from './Dealer.ts'
 import { basic, hidden, show } from './utils.ts'
 import { Button } from './Button.ts'
 import { playerPicksDefine, dealerTurnDefine, playAgainDefine, stopHereDefine, green, red } from './utils.ts'
+import { MODIFIER, NON_MODIFIER } from './defineUtils.ts'
 
 export class BlackJack
 {
@@ -55,8 +56,7 @@ export class BlackJack
 		this.player = new Player(this.deck);
 		this.dealer = new Dealer(this.deck);
 
-		this.bet = new Bets(this.player, this.lauchGame.bind(this));
-
+		this.bet = new Bets(this.player, this.lauchGame.bind(this), MODIFIER);
 		this.playerPicksButton = new Button(posRightButtonX, posButtonY, posButtonZ, playerPicksDefine, "player Picks", this.scene, this);
 		await this.playerPicksButton.init(green);
 		this.playAgainButton = new Button(posRightButtonX, posButtonY, posButtonZ, playAgainDefine, "Play again", this.scene, this);
