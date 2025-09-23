@@ -9,6 +9,11 @@ export class Bets
 
 	private input: Gui.InputText;
 	private modifierPanel: Gui.StackPanel;
+	private modifierPanelFirstLine: Gui.StackPanel;
+	private modifierPanelSecondLine: Gui.StackPanel;
+
+	private buttonFirstLine: Gui.Button[];
+	private buttonSecondLine: Gui.Button[];
 
 	private lauch: () => Promise<void>;
 	// private modifierFunction: () => void;
@@ -30,6 +35,8 @@ export class Bets
 
 		this.input = new Gui.InputText();
 		this.modifierPanel = new Gui.StackPanel();
+		this.modifierPanelFirstLine = new Gui.StackPanel();
+		this.modifierPanelSecondLine = new Gui.StackPanel();
 
 		this.lauch = fct;
 		this.UI = new Gui.Rectangle();
@@ -40,6 +47,9 @@ export class Bets
 		this._modifierOn = modifierOn;
 
 		this.validateButton = Gui.Button.CreateSimpleButton("Validate Button", "Lancer");
+
+		this.buttonFirstLine = [];
+		this.buttonSecondLine = [];
 
 		this.init();
 		this.hide();
@@ -70,7 +80,18 @@ export class Bets
 
 		if (this._modifierOn)
 		{
+			const hugeAmount = false;
 			this.subTexture.addControl(this.initTexts("Modifier : ", VERTICAL_TOP, HORIZONTAL_CENTER, "20px"));
+			this.modifierPanelFirstLine.addControl(this.create2DButton(1));
+			this.modifierPanelFirstLine.addControl(this.create2DButton(2));
+			this.modifierPanelFirstLine.addControl(this.create2DButton(5));
+			this.modifierPanelFirstLine.addControl(this.create2DButton(10));
+			this.modifierPanelFirstLine.addControl(this.create2DButton(20));
+			this.modifierPanelSecondLine.addControl(this.create2DButton(100, hugeAmount));
+			this.modifierPanelSecondLine.addControl(this.create2DButton(1000, hugeAmount));
+			this.modifierPanelSecondLine.addControl(this.create2DButton(10000, hugeAmount));
+			this.modifierPanel.addControl(this.modifierPanelFirstLine);
+			this.modifierPanel.addControl(this.modifierPanelSecondLine);
 			this.subTexture.addControl(this.modifierPanel);
 		}
 		else
@@ -82,6 +103,7 @@ export class Bets
 		this.subTexture.addControl(this.initTexts(this.formatMoney() + "€", VERTICAL_TOP, HORIZONTAL_CENTER, "20px"));
 		if (this._modifierOn)
 			this.subTexture.addControl(this.validateButton);
+
 
 
 		this.UI.addControl(this.subTexture);
@@ -147,42 +169,84 @@ export class Bets
 
 	initModifier()
 	{
-		this.modifierPanel.isVertical = false;
+		this.modifierPanelFirstLine.width = "400px";
+		this.modifierPanelFirstLine.height = "50px";
+		this.modifierPanelSecondLine.width = "400px";
+		this.modifierPanelSecondLine.height = "50px";
+
+		this.modifierPanelFirstLine.isVertical = false;
+		this.modifierPanelFirstLine.spacing = 25;
+		this.modifierPanelSecondLine.isVertical = false;
+		this.modifierPanelSecondLine.spacing = 25;
+
+
+		this.modifierPanelFirstLine.paddingLeft = "25px";
+		this.modifierPanelSecondLine.paddingLeft = "25px";
+
 		this.modifierPanel.width = "400px";
-		this.modifierPanel.height = "50px";
-		this.modifierPanel.paddingLeft = "25px";
+		this.modifierPanel.height = "150px";
 		this.modifierPanel.spacing = 25;
-		this.modifierPanel.addControl(this.create2DButton(1, 1));
-		this.modifierPanel.addControl(this.create2DButton(2, 2));
-		this.modifierPanel.addControl(this.create2DButton(5, 5));
-		this.modifierPanel.addControl(this.create2DButton(10, 10));
-		this.modifierPanel.addControl(this.create2DButton(20, 20));
 	}
 
-	private create2DButton(buttonValue: number, buttonPrice: number): Gui.Button
+	private create2DButton(buttonValue: number, type:boolean = true): Gui.Button
 	{
 		const button = Gui.Button.CreateSimpleButton("button" + buttonValue, "x" + buttonValue.toString());
-		button.width = "50px";
 		button.height = "50px";
+		button.color = "white";
 		button.fontSize = 30;
-		button.cornerRadius = 50;
+		if (type)
+		{
+			button.width = "50px";
+			button.cornerRadius = 50;	
+			this.buttonFirstLine.push(button);
+		}
+		else
+		{
+			button.width =  (buttonValue.toString().length * 25).toString() + "px";
+			button.cornerRadius = 10;
+			this.buttonSecondLine.push(button);
+		}
 
 		button.onPointerUpObservable.add(() => {
-			this.amount = buttonPrice;
+				this.amount = buttonValue;
 		});
-	
+
+		button.onPointerUpObservable.add(() => {
+			if (this.player.getMoney() - this.amount * 2 >= 0)
+			{
+				this.validateButton.color = "#6ca068";
+				this.resetToWhite();
+				button.color = "#569bda";
+			}
+			else
+			{
+				this.validateButton.color = "#c83e3e";
+				this.resetToWhite();
+				button.color = "#569bda";
+			}
+		});
 		return button;
+	}
+
+	private resetToWhite()
+	{
+		this.buttonFirstLine.forEach(button =>{
+			button.color = "white";
+		})
+		this.buttonSecondLine.forEach(button =>{
+			button.color = "white";
+		})
 	}
 
 	private initValidate()
 	{
 		this.validateButton.width = "100px";
 		this.validateButton.height = "50px";
-
 		this.validateButton.cornerRadius = 10;
+		this.validateButton.color = "white";
 
 		this.validateButton.onPointerUpObservable.add(() => {
-			if (this.checkBet(this.amount))
+			if (this.checkBet(this.amount * 2))
 			{
 				this.lauch();
 				this.hide();
@@ -229,7 +293,6 @@ export class Bets
 			return false;
 		else
 		{
-			this.amount = amount;
 			this.UI.isVisible = false;
 			this.player.bet();
 			return true;
@@ -252,7 +315,10 @@ export class Bets
 		this.amount = -1;
 		this.subTexture.clearControls();
 		this.modifierPanel.clearControls();
+		this.modifierPanelFirstLine.clearControls();
+		this.modifierPanelSecondLine.clearControls();
 		this.UI.clearControls();
 		this.addControls();
+		this.validateButton.color = "white";
 	}
 }

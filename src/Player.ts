@@ -48,8 +48,7 @@ export class Player
 			this.money -= amount;
 			return true;
 		}
-		else
-			return false;
+		return false;
 	}
 
 	earnMoney(amount:number): void

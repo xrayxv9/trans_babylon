@@ -56,7 +56,7 @@ export class BlackJack
 		this.player = new Player(this.deck);
 		this.dealer = new Dealer(this.deck);
 
-		this.bet = new Bets(this.player, this.lauchGame.bind(this), NON_MODIFIER);
+		this.bet = new Bets(this.player, this.lauchGame.bind(this), MODIFIER);
 		this.playerPicksButton = new Button(posRightButtonX, posButtonY, posButtonZ, playerPicksDefine, "player Picks", this.scene, this);
 		await this.playerPicksButton.init(green);
 		this.playAgainButton = new Button(posRightButtonX, posButtonY, posButtonZ, playAgainDefine, "Play again", this.scene, this);
