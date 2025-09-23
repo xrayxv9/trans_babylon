@@ -56,7 +56,7 @@ export class BlackJack
 		this.player = new Player(this.deck);
 		this.dealer = new Dealer(this.deck);
 
-		this.bet = new Bets(this.player, this.lauchGame.bind(this), MODIFIER);
+		this.bet = new Bets(this.player, this.lauchGame.bind(this), NON_MODIFIER);
 		this.playerPicksButton = new Button(posRightButtonX, posButtonY, posButtonZ, playerPicksDefine, "player Picks", this.scene, this);
 		await this.playerPicksButton.init(green);
 		this.playAgainButton = new Button(posRightButtonX, posButtonY, posButtonZ, playAgainDefine, "Play again", this.scene, this);
@@ -101,15 +101,13 @@ export class BlackJack
 		this.write("");
 		this.stopPlayingButton!.hide();
 		this.playAgainButton!.hide();
-		await this.reset();
-		await this.deck!.shuffleTexture();
 		await this.playerPicks(false);
 		await this.dealerPicks();
 		await this.playerPicks(false);
 		await this.dealer!.pickCard(this.scene, hidden);
 		this.deck!.increaseCards();
 		this.write("Voulez vous piocher ?");
-		this.playerPicksButton!.show();
+		this.playerPicksButton!.show(this.player!.canPickCard());
 		this.stopTurnButton!.show();
 	}
 
@@ -142,18 +140,12 @@ export class BlackJack
 		this.playerPicksButton!.hide();
 		this.stopTurnButton!.hide();
 
-		let result = await  this.player!.pickCard(this.scene);
+		await  this.player!.pickCard(this.scene);
 		this.deck!.increaseCards();
 		this.showScores();
-		if (!result)
-		{
-			await this.dealerTurn();
-			this.showScores();
-			return ;
-		}
 		if (toShow)
 		{
-			this.playerPicksButton!.show();
+			this.playerPicksButton!.show(this.player!.canPickCard());
 			this.stopTurnButton!.show();
 		}
 	}

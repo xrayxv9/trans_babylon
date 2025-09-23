@@ -59,11 +59,14 @@ export class Button
 		}
 	}
 
-	show()
+	show(toShow: boolean = true)
 	{
-		this.box!.forEach(mesh => {
-			mesh.isVisible = true;
-		})
+		if (toShow)
+		{
+			this.box!.forEach(mesh => {
+				mesh.isVisible = true;
+			})
+		}
 	}
 
 	hide()

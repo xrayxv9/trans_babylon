@@ -20,7 +20,7 @@ export class Player
 		this.asNumber = 0;
 		this.pickedCardNumber = 0;
 		// faire call backend
-		this.money = 3;
+		this.money = 100;
 		this.anim = new Animations();
 		this.deck = cards;
 		this.betDone = false;
