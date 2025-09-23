@@ -14,6 +14,7 @@ export class Bets
 	// private modifierFunction: () => void;
 	
 	private validateButton: Gui.Button;
+	private imageBackGround: Gui.Image;
 
 	private _modifierOn: boolean;
 
@@ -25,6 +26,7 @@ export class Bets
 	{
 		this.texture = Gui.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 		this.subTexture = new Gui.StackPanel();
+		this.imageBackGround = new Gui.Image("UI", "./UI.png");
 
 		this.input = new Gui.InputText();
 		this.modifierPanel = new Gui.StackPanel();
@@ -51,16 +53,20 @@ export class Bets
 		this.initUI();
 
 
-		const image = new Gui.Image("UI", "./UI.png");
-		image.width = "400px";
-		image.height = "600px";
+		this.imageBackGround.width = "400px";
+		this.imageBackGround.height = "600px";
 
 		this.subTexture.paddingTop = "100px";
 		this.subTexture.width = "400px";
 		this.subTexture.height = "600px";
 		this.subTexture.spacing = 25;
 
-		this.UI.addControl(image);
+		this.addControls();
+	}
+
+	private addControls()
+	{
+		this.UI.addControl(this.imageBackGround);
 
 		if (this._modifierOn)
 		{
@@ -80,6 +86,7 @@ export class Bets
 
 		this.UI.addControl(this.subTexture);
 		this.texture.addControl(this.UI);
+
 	}
 
 	private initInput(input:Gui.InputText)
@@ -242,5 +249,10 @@ export class Bets
 	reset()
 	{
 		this.input.text = "";
+		this.amount = -1;
+		this.subTexture.clearControls();
+		this.modifierPanel.clearControls();
+		this.UI.clearControls();
+		this.addControls();
 	}
 }

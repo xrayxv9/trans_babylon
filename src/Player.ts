@@ -43,7 +43,7 @@ export class Player
 
 	sendMoney(amount:number): boolean
 	{
-		if (this.money - amount > 0)
+		if (this.money - amount >= 0)
 		{
 			this.money -= amount;
 			return true;
