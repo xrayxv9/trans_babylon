@@ -7,10 +7,12 @@ export class Bets
 	private amount: number;
 	private player: Player;
 
-	private input: Gui.InputText;
 	private modifierPanel: Gui.StackPanel;
 	private modifierPanelFirstLine: Gui.StackPanel;
 	private modifierPanelSecondLine: Gui.StackPanel;
+
+	private input: Gui.InputText;
+	private inputBackGround: Gui.Rectangle;
 
 	private buttonFirstLine: Gui.Button[];
 	private buttonSecondLine: Gui.Button[];
@@ -33,10 +35,12 @@ export class Bets
 		this.subTexture = new Gui.StackPanel();
 		this.imageBackGround = new Gui.Image("UI", "./UI.png");
 
-		this.input = new Gui.InputText();
 		this.modifierPanel = new Gui.StackPanel();
 		this.modifierPanelFirstLine = new Gui.StackPanel();
 		this.modifierPanelSecondLine = new Gui.StackPanel();
+
+		this.input = new Gui.InputText();
+		this.inputBackGround = new Gui.Rectangle();
 
 		this.lauch = fct;
 		this.UI = new Gui.Rectangle();
@@ -97,7 +101,8 @@ export class Bets
 		else
 		{
 			this.subTexture.addControl(this.initTexts("Parié : ", VERTICAL_TOP, HORIZONTAL_CENTER));
-			this.subTexture.addControl(this.input);
+			this.inputBackGround.addControl(this.input);
+			this.subTexture.addControl(this.inputBackGround);
 		}
 		this.subTexture.addControl(this.initTexts("Vous avez : ", VERTICAL_TOP, HORIZONTAL_CENTER, "20px"));
 		this.subTexture.addControl(this.initTexts(this.formatMoney() + "€", VERTICAL_TOP, HORIZONTAL_CENTER, "20px"));
@@ -113,18 +118,20 @@ export class Bets
 
 	private initInput(input:Gui.InputText)
 	{
+		this.inputBackGround.color = "#141414";
+		this.inputBackGround.thickness = 2;
+		this.inputBackGround.height = "40px";
+		this.inputBackGround.width = "200px";
+		this.inputBackGround.cornerRadius = 10;
+		this.inputBackGround.background = "#141414";
 		input.width = "200px";
 		input.height = "40px";
 		input.color = "white";
-		input.background = "#141414";
-		input.focusedColor = "#141414";
-		input.focusedBackground = "#141414";
+		input.background = "transparent";
+		input.focusedColor = "transparent";
+		input.focusedBackground = "transparent";
 		input.thickness = 0;
 		input.text = "";
-
-		input.horizontalAlignment = HORIZONTAL_CENTER;
-		input.verticalAlignment = VERTICAL_TOP;
-		input.top = "20px";
 
 		input.onBeforeKeyAddObservable.add((info) => {
 			let key = info.currentKey;
@@ -194,6 +201,7 @@ export class Bets
 		button.height = "50px";
 		button.color = "white";
 		button.fontSize = 30;
+		button.thickness = 2;
 		if (type)
 		{
 			button.width = "50px";
@@ -215,14 +223,18 @@ export class Bets
 			if (this.player.getMoney() - this.amount * 2 >= 0)
 			{
 				this.validateButton.color = "#6ca068";
+				this.validateButton.textBlock!.color = "white";
 				this.resetToWhite();
 				button.color = "#569bda";
+				button.textBlock!.color = "white";
 			}
 			else
 			{
 				this.validateButton.color = "#c83e3e";
+				this.validateButton.textBlock!.color = "white";
 				this.resetToWhite();
 				button.color = "#569bda";
+				button.textBlock!.color = "white";
 			}
 		});
 		return button;
@@ -244,6 +256,7 @@ export class Bets
 		this.validateButton.height = "50px";
 		this.validateButton.cornerRadius = 10;
 		this.validateButton.color = "white";
+		this.validateButton.thickness = 2;
 
 		this.validateButton.onPointerUpObservable.add(() => {
 			if (this.checkBet(this.amount * 2))
@@ -317,6 +330,7 @@ export class Bets
 		this.modifierPanel.clearControls();
 		this.modifierPanelFirstLine.clearControls();
 		this.modifierPanelSecondLine.clearControls();
+		this.inputBackGround.clearControls();
 		this.UI.clearControls();
 		this.addControls();
 		this.validateButton.color = "white";
