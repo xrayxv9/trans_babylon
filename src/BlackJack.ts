@@ -1,17 +1,17 @@
 import * as Babylon from "@babylonjs/core";
 import * as Gui from "@babylonjs/gui";
 import { Card3D } from './class3D.ts'
-import { Bets } from './Bets.ts'
-import { Player } from './Player.ts'
+import { Game } from './generalClasses/Game.ts'
+import { Player } from './generalClasses/Player.ts'
 import { Dealer } from './Dealer.ts'
 import { basic, hidden, show } from './utils.ts'
 import { Button } from './Button.ts'
 import { playerPicksDefine, dealerTurnDefine, playAgainDefine, stopHereDefine, green, red } from './utils.ts'
 import { MODIFIER, NON_MODIFIER } from './defineUtils.ts'
+import { BlackJackPlayer } from "./BlackJackPlayer.ts";
 
-export class BlackJack
+export class BlackJack extends Game
 {
-	private player:Player | null;
 	private dealer:Dealer | null;
 	private deck:Card3D | null;
 	private scene:Babylon.Scene;
@@ -24,10 +24,9 @@ export class BlackJack
 	private playerScore: Gui.TextBlock;
 	private dealerScore: Gui.TextBlock;
 
-	private bet: Bets | null;
-
 	constructor(scene:Babylon.Scene)
 	{
+		super();
 		this.player = null;
 		this.dealer = null;
 		this.deck = null;
@@ -41,7 +40,11 @@ export class BlackJack
 		this.playerScore = new Gui.TextBlock();
 		this.dealerScore = new Gui.TextBlock();
 
-		this.bet = null;
+	}
+
+	init()
+	{
+		super.init(BlackJackPlayer);
 	}
 	
 	async allInit (): Promise<void>
@@ -53,10 +56,10 @@ export class BlackJack
 
 		this.deck = new Card3D();
 		await this.deck.init(this.scene);
-		this.player = new Player(this.deck);
+		this.player = new BlackJackPlayer(this.deck);
 		this.dealer = new Dealer(this.deck);
 
-		this.bet = new Bets(this.player, this.lauchGame.bind(this), NON_MODIFIER);
+		this.bets = new Bets(this.player, this.lauchGame.bind(this), NON_MODIFIER);
 		this.playerPicksButton = new Button(posRightButtonX, posButtonY, posButtonZ, playerPicksDefine, "player Picks", this.scene, this);
 		await this.playerPicksButton.init(green);
 		this.playAgainButton = new Button(posRightButtonX, posButtonY, posButtonZ, playAgainDefine, "Play again", this.scene, this);

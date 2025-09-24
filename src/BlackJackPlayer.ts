@@ -2,9 +2,10 @@ import * as Babylon from "@babylonjs/core";
 import { Card3D } from './class3D.ts'
 import type { Card } from './utils.ts'
 import { Animations } from './Animation.ts'
+import { Player } from './generalClasses/Player.ts'
 
 
-export class Player
+export class BlackJackPlayer extends Player
 {
 	private count: number;
 	private asNumber: number;
@@ -16,6 +17,7 @@ export class Player
 
 	constructor(cards: Card3D)
 	{
+		super();
 		this.count = 0;
 		this.asNumber = 0;
 		this.pickedCardNumber = 0;
