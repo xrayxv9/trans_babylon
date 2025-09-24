@@ -9,11 +9,9 @@ export class BlackJackPlayer extends Player
 {
 	private count: number;
 	private asNumber: number;
-	private money: number;
 	private anim: Animations;
 	private deck: Card3D;
 	private pickedCardNumber:number;
-	private betDone;
 
 	constructor(cards: Card3D)
 	{
@@ -26,36 +24,6 @@ export class BlackJackPlayer extends Player
 		this.anim = new Animations();
 		this.deck = cards;
 		this.betDone = false;
-	}
-
-	getMoney(): number
-	{
-		return this.money;
-	}
-
-	bet(): void
-	{
-		this.betDone = true;
-	}
-
-	getBet(): boolean
-	{
-		return this.betDone;
-	}
-
-	sendMoney(amount:number): boolean
-	{
-		if (this.money - amount >= 0)
-		{
-			this.money -= amount;
-			return true;
-		}
-		return false;
-	}
-
-	earnMoney(amount:number): void
-	{
-		this.money += amount;
 	}
 
 	canPickCard():boolean
@@ -123,8 +91,8 @@ export class BlackJackPlayer extends Player
 
 	reset(): void
 	{	
+		super.reset();
 		this.count = 0;
 		this.pickedCardNumber = 0;
-		this.betDone = false;
 	}
 }
