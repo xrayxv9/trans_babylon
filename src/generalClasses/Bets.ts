@@ -146,6 +146,7 @@ export class Bets
 			{
 				if (this.checkBet(parseInt(this.input.text)))
 				{
+					this.amount = parseInt(this.input.text);
 					this.hide();
 					this.lauch();
 				}
