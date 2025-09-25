@@ -27,6 +27,7 @@ export class BlackJackPlayer extends Player
 	{
 		if (this.count > 21 && this.asNumber >= 1)
 		{
+			console.log("mmhh bizzare");
 			this.asNumber--;
 			this.count -= 10;
 		}

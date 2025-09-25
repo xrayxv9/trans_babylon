@@ -74,8 +74,8 @@ export class BlackJack extends Game
 		this.playerScore.fontSize = 60;
 		this.playerScore.horizontalAlignment = Gui.Control.HORIZONTAL_ALIGNMENT_LEFT;
 		this.playerScore.verticalAlignment = Gui.Control.VERTICAL_ALIGNMENT_TOP;
-		this.playerScore.left = "0px";
-		this.playerScore.top = "0px";
+		this.playerScore.left = "20px";
+		this.playerScore.top = "20px";
 		playerTexture.addControl(this.playerScore);
 
 		const dealerTexture = Gui.AdvancedDynamicTexture.CreateFullscreenUI("UI");
@@ -85,8 +85,8 @@ export class BlackJack extends Game
 		this.dealerScore.fontSize = 60;
 		this.dealerScore.horizontalAlignment = Gui.Control.HORIZONTAL_ALIGNMENT_RIGHT;
 		this.dealerScore.verticalAlignment = Gui.Control.VERTICAL_ALIGNMENT_TOP;
-		this.dealerScore.left = "0px";
-		this.dealerScore.top = "0px";
+		this.dealerScore.left = "-20px";
+		this.dealerScore.top = "20px";
 		dealerTexture.addControl(this.dealerScore);
 	}
 
@@ -146,8 +146,8 @@ export class BlackJack extends Game
 
 	showScores(): void
 	{
-		this.playerScore.text = "player : " + this.player!.getCount().toString();
-		this.dealerScore.text = "dealer : " + this.dealer!.getCount().toString();
+		this.playerScore.text = "Player: " + this.player!.getCount().toString();
+		this.dealerScore.text = "Dealer: " + this.dealer!.getCount().toString();
 	}
 
 	async dealerTurn(): Promise<void>

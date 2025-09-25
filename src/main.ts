@@ -17,21 +17,23 @@ window.addEventListener("DOMContentLoaded", () => {
 		camera.beta += -0.3;
 
 		//permet de se deplacer
-		camera.attachControl(canvas, true);
+		// camera.attachControl(canvas, true);
 
 		// enleve le zoom
-		camera.lowerRadiusLimit = camera.radius;
-		camera.upperRadiusLimit = camera.radius;
+		// camera.lowerRadiusLimit = camera.radius;
+		// camera.upperRadiusLimit = camera.radius;
 
 		// drag clic
-		camera.panningSensibility = 0;
+		// camera.panningSensibility = 0;
 		
 		// enleve la molette
-		camera.wheelPrecision = 0;
+		// camera.wheelPrecision = 0;
 
 		// empeche de tourner differment de droite / gauche
-		camera.lowerBetaLimit = camera.beta;
-		camera.upperBetaLimit = camera.beta;
+		// camera.lowerBetaLimit = camera.beta;
+		// camera.upperBetaLimit = camera.beta;
+
+		// camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
 		const light = new Babylon.HemisphericLight("light", new Babylon.Vector3(0, 1, 0), scene);
 		light.diffuse = new Babylon.Color3(1, 1, 1);
 		return { scene, camera };
