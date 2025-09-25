@@ -6,13 +6,15 @@ import { Dealer } from './Dealer.ts'
 import { basic, hidden, show } from './utils.ts'
 import { Button } from './Button.ts'
 import { playerPicksDefine, dealerTurnDefine, playAgainDefine, stopHereDefine, green, red } from './utils.ts'
-import { MODIFIER, NON_MODIFIER } from './defineUtils.ts'
+import { MODIFIER, NON_MODIFIER } from './generalClasses/defineUtils.ts'
 import { Game } from './generalClasses/Game.ts'
+import { Bets } from './generalClasses/Bets.ts'
 
 
 export class BlackJack extends Game
 {
 	private dealer:Dealer | null;
+	private player:BlackJackPlayer | null;
 	private deck:Card3D | null;
 	private scene:Babylon.Scene;
 
@@ -30,6 +32,7 @@ export class BlackJack extends Game
 		super();
 		this.dealer = null;
 		this.deck = null;
+		this.player = null;
 		this.scene = scene;
 		this.scene.clearColor = new Babylon.Color4(0, 0.130, 0.121, 1);
 		this.playerPicksButton = null;
@@ -50,10 +53,10 @@ export class BlackJack extends Game
 
 		this.deck = new Card3D();
 		await this.deck.init(this.scene);
-		this.player = new Player(this.deck);
+		this.player = new BlackJackPlayer(this.deck);
 		this.dealer = new Dealer(this.deck);
+		this.bets = new Bets(this.player, this.lauchGame.bind(this), NON_MODIFIER);
 
-		this.bet = new Bets(this.player, this.lauchGame.bind(this), MODIFIER);
 		this.playerPicksButton = new Button(posRightButtonX, posButtonY, posButtonZ, playerPicksDefine, "player Picks", this.scene, this);
 		await this.playerPicksButton.init(green);
 		this.playAgainButton = new Button(posRightButtonX, posButtonY, posButtonZ, playAgainDefine, "Play again", this.scene, this);
@@ -87,12 +90,6 @@ export class BlackJack extends Game
 		dealerTexture.addControl(this.dealerScore);
 	}
 
-	async restartGame(): Promise<void>
-	{
-		await this.reset();
-		this.bet!.show();
-	}
-
 	async lauchGame(): Promise<void>
 	{
 		this.write("");
@@ -110,13 +107,13 @@ export class BlackJack extends Game
 
 	async reset(): Promise<void>
 	{
+		super.reset();
 		this.player!.reset();
 		this.dealer!.reset();
 		this.deck!.reset();
 		this.playerScore.text = "";
 		this.dealerScore.text = "";
 		await this.deck!.shuffleTexture();
-		this.bet!.reset();
 	}
 
 	async dealerPicks(): Promise<void>
@@ -190,7 +187,8 @@ export class BlackJack extends Game
 	{
 		let dealer:number = this.dealer!.getCount();
 		let player:number = this.player!.getCount();
-		let amount:number = this.bet!.getAmount();
+		let amount:number = this.bets!.getAmount();
+		console.log("amount : " + amount);
 
 		if (player > 21)
 			this.write("Vous avez burst !");
@@ -212,22 +210,20 @@ export class BlackJack extends Game
 			this.player!.earnMoney(amount * 2);
 		}
 		await this.sleep(3000);
-		this.mainGame();
+		this.startGame();
 	}
 
-	async mainGame(): Promise<void>
+	async startGame(): Promise<void>
 	{
-		if (!this.playAgainButton)
-			await this.allInit();
+		await super.startGame();
 		
 		this.write("Lancer une partie ?");
 		this.playAgainButton!.show();
 		this.stopPlayingButton!.show();
 	}
 
-	getPlayer(): Player
+	getPlayer(): BlackJackPlayer
 	{
 		return this.player!;
 	}
-
 }

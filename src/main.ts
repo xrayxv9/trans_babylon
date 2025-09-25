@@ -1,13 +1,7 @@
 import './style.css'
 import "@babylonjs/loaders"
 import * as Babylon from "@babylonjs/core"
-import { Card3D } from './class3D.ts'
-import { Player } from './Player.ts'
-import { Dealer } from './Dealer.ts'
 import { BlackJack } from './BlackJack.ts'
-import { Button } from './Button.ts'
-import { playerPicksDefine, dealerTurnDefine, playAgainDefine } from './utils.ts'
-import { Bets } from './Bets.ts'
 
 window.addEventListener("DOMContentLoaded", () => {
 	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -50,10 +44,9 @@ window.addEventListener("DOMContentLoaded", () => {
 		meshes.forEach(mesh =>{
 			mesh.checkCollisions = true;
 		});
-
 	});
 	const game:BlackJack = new BlackJack(scene);
-	game.mainGame();
+	game.startGame();
 	engine.setHardwareScalingLevel(0.6); // ou 2
 	engine.runRenderLoop(() => {
 		scene.render();

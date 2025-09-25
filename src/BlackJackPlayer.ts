@@ -19,11 +19,8 @@ export class BlackJackPlayer extends Player
 		this.count = 0;
 		this.asNumber = 0;
 		this.pickedCardNumber = 0;
-		// faire call backend
-		this.money = 100;
 		this.anim = new Animations();
 		this.deck = cards;
-		this.betDone = false;
 	}
 
 	canPickCard():boolean
@@ -94,5 +91,6 @@ export class BlackJackPlayer extends Player
 		super.reset();
 		this.count = 0;
 		this.pickedCardNumber = 0;
+		this.asNumber = 0;
 	}
 }

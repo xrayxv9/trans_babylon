@@ -1,6 +1,6 @@
 import { Player } from './Player.ts'
 import * as Gui from "@babylonjs/gui";
-import { VERTICAL_TOP, VERTICAL_CENTER, HORIZONTAL_RIGHT, HORIZONTAL_CENTER } from '../defineUtils.ts'
+import { VERTICAL_TOP, VERTICAL_CENTER, HORIZONTAL_RIGHT, HORIZONTAL_CENTER } from './defineUtils.ts'
 
 export class Bets
 {
