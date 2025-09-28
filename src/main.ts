@@ -29,12 +29,13 @@ window.addEventListener("DOMContentLoaded", () => {
 	Babylon.SceneLoader.ImportMesh(null, "./", "slot_machine.glb", scene, (meshes)=>{
 		let i:number = 0;
 		meshes.forEach(element => {
-			if (i == 11 || i == 12 || i == 10 || i==1)
+			if (i == 4 || i == 5 || i == 16 || i == 17 || i == 18)
 			{
-				const rotate = element.rotation.clone();
-				element.rotation = rotate.add(new Babylon.Vector3(Ale(19), 0, 0));				
+				// const rotate = element.rotation.clone();
+				// element.rotation = rotate.add(new Babylon.Vector3(Ale(19), 0, 0));				
 			}
-				// element.isVisible = false;
+			else
+				element.isVisible = false;
 			i++;
 			const rotate = element.rotation.clone();
 			element.rotation = rotate.add(new Babylon.Vector3(Math.PI, 0, 0));
