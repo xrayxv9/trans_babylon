@@ -31,8 +31,8 @@ window.addEventListener("DOMContentLoaded", () => {
 		meshes.forEach(element => {
 			if (i == 4 || i == 5 || i == 16 || i == 17 || i == 18)
 			{
-				// const rotate = element.rotation.clone();
-				// element.rotation = rotate.add(new Babylon.Vector3(Ale(19), 0, 0));				
+				const rotate = element.rotation.clone();
+				element.rotation = rotate.add(new Babylon.Vector3(Ale(19), 0, 0));				
 			}
 			else
 				element.isVisible = false;
