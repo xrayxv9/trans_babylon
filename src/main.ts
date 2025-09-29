@@ -26,7 +26,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	}
 	const scene = createScene();
 
-	Babylon.SceneLoader.ImportMesh(null, "./", "slot_machine.glb", scene, (meshes)=>{
+	Babylon.SceneLoader.ImportMesh(null, "./", "test.glb", scene, (meshes)=>{
 		let i:number = 0;
 		meshes.forEach(element => {
 			if (i == 4 || i == 5 || i == 16 || i == 17 || i == 18)
@@ -34,8 +34,8 @@ window.addEventListener("DOMContentLoaded", () => {
 				const rotate = element.rotation.clone();
 				element.rotation = rotate.add(new Babylon.Vector3(Ale(19), 0, 0));				
 			}
-			else
-				element.isVisible = false;
+			// else
+			// 	element.isVisible = false;
 			i++;
 			const rotate = element.rotation.clone();
 			element.rotation = rotate.add(new Babylon.Vector3(Math.PI, 0, 0));
