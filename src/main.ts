@@ -1,6 +1,7 @@
 import './style.css'
 import "@babylonjs/loaders"
 import * as Babylon from "@babylonjs/core"
+import { slotMachine } from './slotMachine';
 
 export function Ale(num: number): number
 {
@@ -26,21 +27,9 @@ window.addEventListener("DOMContentLoaded", () => {
 	}
 	const scene = createScene();
 
-	Babylon.SceneLoader.ImportMesh(null, "./", "test.glb", scene, (meshes)=>{
-		let i:number = 0;
-		meshes.forEach(element => {
-			if (i == 4 || i == 5 || i == 16 || i == 17 || i == 18)
-			{
-				const rotate = element.rotation.clone();
-				element.rotation = rotate.add(new Babylon.Vector3(Ale(19), 0, 0));				
-			}
-			// else
-			// 	element.isVisible = false;
-			i++;
-			const rotate = element.rotation.clone();
-			element.rotation = rotate.add(new Babylon.Vector3(Math.PI, 0, 0));
-		});
-	});
+	const game = new slotMachine(scene);
+	game.init();
+
 
 	engine.runRenderLoop(() => {
 		scene.render();
