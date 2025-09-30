@@ -8,3 +8,8 @@ export const VERTICAL_CENTER = Gui.Control.VERTICAL_ALIGNMENT_CENTER;
 export const VERTICAL_BOT = Gui.Control.VERTICAL_ALIGNMENT_BOTTOM;
 export const MODIFIER = true;
 export const NON_MODIFIER = false;
+
+export const BLACKJACK = 0;
+export const SLOT_MACHINE = 1;
+export const ROULETTE = 2;
+export const PONG = 3;

@@ -1,13 +1,45 @@
 import { Player } from './Player.ts'
 import { Bets } from './Bets.ts'
+import * as Babylon from "@babylonjs/core"
+import "@babylonjs/loaders"
+import { slotMachine } from './slotMachine.ts';
+import { BLACKJACK, SLOT_MACHINE } from './defineUtils.ts'
 
-export abstract class Game
+export class Game
 {
 	protected bets: Bets | null;
-	
-	constructor()
+	protected scene: Babylon.Scene;
+	protected engine: Babylon.Engine;
+	private canvas: HTMLCanvasElement;
+	protected static engine: Babylon.Engine;
+	protected camera: Babylon.ArcRotateCamera;
+
+	constructor(canvas:HTMLCanvasElement)
 	{
+		Babylon.RenderingManager.MAX_RENDERINGGROUPS = 52;
+		this.engine = new Babylon.Engine(canvas, true);
+		this.canvas = canvas;
 		this.bets = null;
+		this.scene = new Babylon.Scene(this.engine);
+		this.camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,0,0), this.scene);
+
+		this.engine.runRenderLoop(() => {
+			this.scene.render();
+		});
+	}
+
+	lauch(gameToLauch:number)
+	{
+		if (gameToLauch == BLACKJACK)
+		{
+			// const bj = new BlackJack(this.canvas);
+			// bj.startGame();
+		}
+		else if (gameToLauch == SLOT_MACHINE)
+		{
+			const sm = new slotMachine(this.canvas);
+			sm.init();
+		}
 	}
 
 	/**
@@ -15,7 +47,10 @@ export abstract class Game
 	 * it is an async method but can be used as a basic method
 	 * @returns Promise<void>
 	 * */
-	abstract init(): Promise<void>
+	async init(): Promise<void>
+	{
+
+	}
 
 	/**
 	 * Method to restart the Game, it resets the Game, and shows the bet screen
@@ -41,7 +76,10 @@ export abstract class Game
 	 * You have to code it all
 	 * @returns Promise<void>
 	 * */
-	abstract lauchGame(): Promise<void>;
+	async lauchGame(): Promise<void>
+	{
+
+	}
 
 	/**
 	 * The method that is called on the main

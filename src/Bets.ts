@@ -128,6 +128,7 @@ export class Bets
 		input.height = "40px";
 		input.color = "white";
 		input.background = "transparent";
+		input.fontSize = 40;
 		input.focusedColor = "transparent";
 		input.focusedBackground = "transparent";
 		input.thickness = 0;
@@ -201,7 +202,7 @@ export class Bets
 		const button = Gui.Button.CreateSimpleButton("button" + buttonValue, "x" + buttonValue.toString());
 		button.height = "50px";
 		button.color = "white";
-		button.fontSize = 30;
+		button.fontSize = 40;
 		button.thickness = 2;
 		if (type)
 		{
@@ -281,7 +282,7 @@ export class Bets
 		panel.horizontalAlignment = horizontalPos;
 		panel.verticalAlignment = verticalPos;
 		betText.text = text;
-		betText.fontSize = 30;
+		betText.fontSize = 40;
 		betText.color = "white"
 		panel.thickness = 0;
 
