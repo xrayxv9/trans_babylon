@@ -2,7 +2,7 @@ import { Player } from './Player.ts'
 import { Bets } from './Bets.ts'
 import * as Babylon from "@babylonjs/core"
 import "@babylonjs/loaders"
-import { slotMachine } from './slotMachine.ts';
+import { SlotMachine } from './SlotMachine.ts';
 import { BLACKJACK, SLOT_MACHINE } from './defineUtils.ts'
 
 export class Game
@@ -37,7 +37,7 @@ export class Game
 		}
 		else if (gameToLauch == SLOT_MACHINE)
 		{
-			const sm = new slotMachine(this.canvas);
+			const sm = new SlotMachine(this.canvas);
 			sm.init();
 		}
 	}

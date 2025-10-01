@@ -67,7 +67,6 @@ export class Animations
 
 		fruitReset.setKeys(keysRotate);
 		mesh.animations = [fruitReset];
-
 	}
 
 	makeFruit(mesh:Babylon.AbstractMesh, rotateValue:number, fruit:string)

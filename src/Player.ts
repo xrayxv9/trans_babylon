@@ -45,6 +45,7 @@ export class Player
 	 */
 	earnMoney(amount:number): void
 	{
+		console.log("amount of money to earn : " + amount);
 		this.money += amount;
 	}
 

@@ -29,11 +29,13 @@ export class Bets
 	private subTexture: Gui.StackPanel;
 	private UI: Gui.Rectangle;
 
+	private buffer:number;
+
 	constructor(player: Player, fct: ()=> Promise<void>, modifierOn:boolean)
 	{
 		this.texture = Gui.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 		this.subTexture = new Gui.StackPanel();
-		this.imageBackGround = new Gui.Image("UI", "../../../public/blackjack/UI.png");
+		this.imageBackGround = new Gui.Image("UI", "./UI.png");
 
 		this.modifierPanel = new Gui.StackPanel();
 		this.modifierPanelFirstLine = new Gui.StackPanel();
@@ -54,6 +56,8 @@ export class Bets
 
 		this.buttonFirstLine = [];
 		this.buttonSecondLine = [];
+
+		this.buffer = 1;
 
 		this.init();
 		this.hide();
@@ -107,7 +111,10 @@ export class Bets
 		this.subTexture.addControl(this.initTexts("Vous avez : ", VERTICAL_TOP, HORIZONTAL_CENTER, "20px"));
 		this.subTexture.addControl(this.initTexts(this.formatMoney() + "€", VERTICAL_TOP, HORIZONTAL_CENTER, "20px"));
 		if (this._modifierOn)
+		{
 			this.subTexture.addControl(this.validateButton);
+			this.validateButton.textBlock!.color = "white";
+		}
 
 
 
@@ -202,7 +209,7 @@ export class Bets
 		const button = Gui.Button.CreateSimpleButton("button" + buttonValue, "x" + buttonValue.toString());
 		button.height = "50px";
 		button.color = "white";
-		button.fontSize = 40;
+		button.fontSize = 35;
 		button.thickness = 2;
 		if (type)
 		{
@@ -218,10 +225,7 @@ export class Bets
 		}
 
 		button.onPointerUpObservable.add(() => {
-				this.amount = buttonValue;
-		});
-
-		button.onPointerUpObservable.add(() => {
+			this.amount = buttonValue;
 			if (this.player.getMoney() - this.amount * 2 >= 0)
 			{
 				this.validateButton.color = "#6ca068";
@@ -239,6 +243,18 @@ export class Bets
 				button.textBlock!.color = "white";
 			}
 		});
+
+		if (buttonValue == this.buffer)
+		{
+			const fakePointerInfo = {
+			  buttonIndex: 0,
+			  x: 0,
+			  y: 0,
+			  dimension: 2,
+			  // Ajoute d'autres propriétés selon ta version Babylon si nécessaire
+			} as any;
+			button.onPointerUpObservable.notifyObservers(fakePointerInfo);
+		}
 		return button;
 	}
 
@@ -263,6 +279,7 @@ export class Bets
 		this.validateButton.onPointerUpObservable.add(() => {
 			if (this.checkBet(this.amount * 2))
 			{
+				this.buffer = this.amount;
 				this.lauch();
 				this.hide();
 			}
@@ -335,6 +352,9 @@ export class Bets
 		this.inputBackGround.clearControls();
 		this.UI.clearControls();
 		this.addControls();
-		this.validateButton.color = "white";
+		if (this.buffer > this.player.getMoney())
+			this.validateButton.color = "#c83e3e";
+		else
+			this.validateButton.color = "#6ca068";
 	}
 }

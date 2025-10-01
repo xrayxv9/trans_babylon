@@ -1,13 +1,16 @@
 import { Game } from './Game.ts'
 import * as Babylon from "@babylonjs/core"
+import { Bets } from './Bets.ts'
 import { Player } from './Player.ts';
 import { Animations } from './Animations.ts';
+import { ORANGE } from './utils.ts';
+import { MODIFIER } from './defineUtils.ts';
 
 // les 5 caluls sont :
 // x = Math.PI / 5;
 // 0 * x, 2 * x, 4 * x, 6 * x, 8 * x
 
-export class slotMachine extends Game
+export class SlotMachine extends Game
 {
 	private firstWheel: {"texture" :Babylon.AbstractMesh, "rotation": number} | {"texture": null, "rotation": -1};
 	private secondWheel: {"texture" : Babylon.AbstractMesh, "rotation": number} |  {"texture": null, "rotation": -1};
@@ -17,6 +20,7 @@ export class slotMachine extends Game
 	private player: Player;
 	private anim: Animations;
 	private canLauch: boolean;
+	private multiplier: number;
 	
 	constructor(canvas:HTMLCanvasElement)
 	{
@@ -29,18 +33,19 @@ export class slotMachine extends Game
 		this.fourthWheel =  {"texture": null, "rotation": -1};
 		this.lever = null;	
 		this.canLauch = this.player.getMoney() > 10;
+		this.bets = new Bets(this.player, this.lauchGame.bind(this), MODIFIER);
+		this.multiplier = 0;
 	}
 
 	async init(): Promise<void>
 	{
 		this.initScene();
-		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "slot_machine.glb", this.scene);
+		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
 		this.lever = result.meshes[4];
 		this.firstWheel!["texture"] = result.meshes[5];
 		this.secondWheel!["texture"] = result.meshes[16];
 		this.thirdWheel!["texture"] = result.meshes[17];
 		this.fourthWheel!["texture"] = result.meshes[18];
-
 
 		result.meshes.forEach(mesh =>{
 			let i:number = 0;
@@ -53,13 +58,12 @@ export class slotMachine extends Game
 		this.lever!.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 			Babylon.ActionManager.OnPickTrigger,
 			async () =>{
-				console.log("can Lauch : " + this.canLauch + " money : " + this.player.getMoney());
 				if (this.canLauch && this.player.getMoney() > 10)
 				{
-					this.player.sendMoney(10);
+					this.canLauch = false;
 					this.anim.leverSuccess(this.lever!);
-					await this.scene.beginDirectAnimation(this.lever, [this.lever!.animations[0]], 0, 70, false).waitAsync();
-					await this.lauchGame();
+					await this.reset();
+					this.bets!.show();
 				}
 				else
 				{
@@ -73,8 +77,8 @@ export class slotMachine extends Game
 	initScene(): void
 	{
 		this.scene.removeCamera(this.camera);
-		this.camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,0.75,1.25), this.scene);
-		this.camera!.fov = 1.5;
+		this.camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,0.75,1.4), this.scene);
+		this.camera!.fov = 1.2;
 		this.camera.beta += 0.2;
 
 		const light = new Babylon.HemisphericLight("light", new Babylon.Vector3(0, 1, 0), this.scene);
@@ -99,8 +103,8 @@ export class slotMachine extends Game
 
 	async lauchGame()
 	{
-		this.canLauch = false;
-		await this.reset();
+		const amount = this.bets!.getAmount();
+		await this.scene.beginDirectAnimation(this.lever, [this.lever!.animations[0]], 0, 70, false).waitAsync();
 		this.firstWheel["rotation"] = this.generateAleatoryNumber();
 		this.secondWheel["rotation"] = this.generateAleatoryNumber();
 		this.thirdWheel["rotation"] = this.generateAleatoryNumber();
@@ -118,11 +122,21 @@ export class slotMachine extends Game
 		this.makeRotations(this.thirdWheel["texture"]!);
 		await this.sleep(100);
 		await this.makeRotations(this.fourthWheel["texture"]!);
+		console.log("before : ");
+		this.player.earnMoney(
+			this.calculWin([this.firstWheel["rotation"], this.secondWheel["rotation"], this.thirdWheel["rotation"],
+			this.fourthWheel["rotation"]],
+				-1,
+				0,
+				0,
+				amount) * this.multiplier);
+		await this.sleep(1000);
 		this.canLauch =  true;
 	}
 
 	async reset()
 	{
+		super.reset();
 		if (this.firstWheel["rotation"] != -1)
 		{
 			this.anim.resetMesh(this.firstWheel["texture"]!, this.firstWheel["rotation"]);
@@ -130,11 +144,57 @@ export class slotMachine extends Game
 			this.anim.resetMesh(this.thirdWheel["texture"]!, this.thirdWheel["rotation"]);
 			this.anim.resetMesh(this.fourthWheel["texture"]!, this.fourthWheel["rotation"]);
 
-			await this.makeRotations(this.firstWheel["texture"]!);
-			await this.makeRotations(this.secondWheel["texture"]!);
-			await this.makeRotations(this.thirdWheel["texture"]!);
-			await this.makeRotations(this.fourthWheel["texture"]!);
+			if (this.firstWheel["rotation"] != ORANGE)
+				this.makeRotations(this.firstWheel["texture"]!);
+			if (this.secondWheel["rotation"] != ORANGE)
+				this.makeRotations(this.secondWheel["texture"]!);
+			if (this.thirdWheel["rotation"] != ORANGE)
+				this.makeRotations(this.thirdWheel["texture"]!);
+			if (this.fourthWheel["rotation"] != ORANGE)
+				this.makeRotations(this.fourthWheel["texture"]!);;
+			this.firstWheel["texture"]!.rotation.x = Math.PI;
+			this.secondWheel["texture"]!.rotation.x = Math.PI;
+			this.thirdWheel["texture"]!.rotation.x = Math.PI;
+			this.fourthWheel["texture"]!.rotation.x = Math.PI;
 		}
+		this.multiplier = 0;
+	}
+
+	getCoeff(depth:number)
+	{
+		if (depth == 0)
+			return 1;
+		else if (depth == 1)
+			return 2;
+		return 5;
+	}
+
+	calculWin(resultList: number[], lastOne:number, currentWin:number, depth:number, amount:number):number
+	{
+		const coeff:number = resultList.length;
+
+		const last:number = resultList[0];
+		if (coeff == 0)
+			return currentWin;
+		if (lastOne == resultList[0])
+		{
+			const multiplier = this.getCoeff(depth);
+			if (this.multiplier != 2)
+				this.multiplier = multiplier;
+			else
+				this.multiplier += multiplier;
+			if (currentWin != 0)
+				currentWin *= multiplier;
+			else if (currentWin > -1)
+				currentWin += (resultList[0] + 1) * amount;
+		}
+		else
+		{
+			resultList.shift()
+			return currentWin + this.calculWin(resultList, last, 0, 0, amount);
+		}
+		resultList.shift();
+		return this.calculWin(resultList, last, currentWin, depth + 1, amount);
 	}
 }
 

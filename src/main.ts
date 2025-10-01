@@ -1,7 +1,8 @@
 import './style.css'
 import "@babylonjs/loaders"
 import * as Babylon from "@babylonjs/core"
-import { slotMachine } from './slotMachine.ts'
+// do not remove this inclue under
+import { SlotMachine } from './SlotMachine.ts'
 import { Game } from './Game.ts';
 import { SLOT_MACHINE } from './defineUtils.ts';
 
