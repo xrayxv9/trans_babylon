@@ -130,7 +130,7 @@ export class SlotMachine extends Game
 				0,
 				0,
 				amount) * this.multiplier);
-		await this.sleep(1000);
+		await this.sleep(500);
 		this.canLauch =  true;
 	}
 
@@ -172,21 +172,19 @@ export class SlotMachine extends Game
 	calculWin(resultList: number[], lastOne:number, currentWin:number, depth:number, amount:number):number
 	{
 		const coeff:number = resultList.length;
-
 		const last:number = resultList[0];
+
+		console.log("current Win : " + currentWin);
 		if (coeff == 0)
 			return currentWin;
 		if (lastOne == resultList[0])
 		{
 			const multiplier = this.getCoeff(depth);
-			if (this.multiplier != 2)
+			if (multiplier != 2)
 				this.multiplier = multiplier;
 			else
 				this.multiplier += multiplier;
-			if (currentWin != 0)
-				currentWin *= multiplier;
-			else if (currentWin > -1)
-				currentWin += (resultList[0] + 1) * amount;
+			currentWin = (resultList[0] + 1) * amount;
 		}
 		else
 		{
