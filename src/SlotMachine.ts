@@ -58,7 +58,7 @@ export class SlotMachine extends Game
 		this.lever!.actionManager.registerAction(new Babylon.ExecuteCodeAction(
 			Babylon.ActionManager.OnPickTrigger,
 			async () =>{
-				if (this.canLauch && this.player.getMoney() > 10)
+				if (this.canLauch)
 				{
 					this.canLauch = false;
 					this.anim.leverSuccess(this.lever!);

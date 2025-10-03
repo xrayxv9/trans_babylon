@@ -114,6 +114,8 @@ export class Bets
 		{
 			this.subTexture.addControl(this.validateButton);
 			this.validateButton.textBlock!.color = "white";
+			if (this.buffer * 2 > this.player.getMoney())
+				this.validateButton.color = "#c83e3e";;
 		}
 
 
@@ -352,9 +354,5 @@ export class Bets
 		this.inputBackGround.clearControls();
 		this.UI.clearControls();
 		this.addControls();
-		if (this.buffer > this.player.getMoney())
-			this.validateButton.color = "#c83e3e";
-		else
-			this.validateButton.color = "#6ca068";
 	}
 }
