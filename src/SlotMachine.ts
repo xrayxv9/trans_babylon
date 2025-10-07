@@ -41,6 +41,24 @@ export class SlotMachine extends Game
 	{
 		this.initScene();
 		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
+		const deco1 = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
+		const deco2 = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
+
+		let i = 0;
+		let rotate = deco1.meshes[0].rotation.clone();
+		deco1.meshes[0].rotation = rotate.add(new Babylon.Vector3(Math.PI, Math.PI / 1.2, Math.PI));
+
+		let deplacement = deco1.meshes[0].position.clone();
+		deco1.meshes[0].position = deplacement.add(new Babylon.Vector3(1.4, 0, 0.1));
+
+		i = 0;
+		rotate = deco2.meshes[0].rotation.clone();
+		deco2.meshes[0].rotation = rotate.add(new Babylon.Vector3(Math.PI, - Math.PI / 1.2, Math.PI));
+
+		deplacement = deco2.meshes[0].position.clone();
+		deco2.meshes[0].position = deplacement.add(new Babylon.Vector3(-1.3, 0, 0.1));
+
+
 		this.lever = result.meshes[4];
 		this.firstWheel!["texture"] = result.meshes[5];
 		this.secondWheel!["texture"] = result.meshes[16];
@@ -48,10 +66,8 @@ export class SlotMachine extends Game
 		this.fourthWheel!["texture"] = result.meshes[18];
 
 		result.meshes.forEach(mesh =>{
-			let i:number = 0;
 			const rotate = mesh.rotation.clone();
 			mesh.rotation = rotate.add(new Babylon.Vector3(Math.PI, Math.PI, Math.PI));
-			i++;
 		});
 
 		this.lever!.actionManager = new Babylon.ActionManager(this.scene);
@@ -77,10 +93,11 @@ export class SlotMachine extends Game
 	initScene(): void
 	{
 		this.scene.removeCamera(this.camera);
-		this.camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0,0.75,1.4), this.scene);
+		this.camera = new Babylon.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 3, new Babylon.Vector3(0.05,0.75,1.5), this.scene);
 		this.camera!.fov = 1.2;
 		this.camera.beta += 0.2;
 
+		this.camera.attachControl();
 		const light = new Babylon.HemisphericLight("light", new Babylon.Vector3(0, 1, 0), this.scene);
 		light.diffuse = new Babylon.Color3(1, 1, 1);
 
