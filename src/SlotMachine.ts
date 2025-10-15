@@ -1,10 +1,11 @@
 import { Game } from './Game.ts'
 import * as Babylon from "@babylonjs/core"
+import * as Gui from "@babylonjs/gui"
 import { Bets } from './Bets.ts'
 import { Player } from './Player.ts';
 import { Animations } from './Animations.ts';
 import { ORANGE } from './utils.ts';
-import { MODIFIER } from './defineUtils.ts';
+import { HORIZONTAL_CENTER, HORIZONTAL_LEFT, MODIFIER, VERTICAL_BOT, VERTICAL_CENTER } from './defineUtils.ts';
 
 // les 5 caluls sont :
 // x = Math.PI / 5;
@@ -21,6 +22,10 @@ export class SlotMachine extends Game
 	private anim: Animations;
 	private canLauch: boolean;
 	private multiplier: number;
+	private confettis: Babylon.AbstractMesh[] | null;
+	private animationConfettis: Babylon.AnimationGroup[] | null;
+	private panel: Gui.Rectangle;
+	private text: Gui.TextBlock;
 	
 	constructor(canvas:HTMLCanvasElement)
 	{
@@ -35,6 +40,14 @@ export class SlotMachine extends Game
 		this.canLauch = this.player.getMoney() > 10;
 		this.bets = new Bets(this.player, this.lauchGame.bind(this), MODIFIER);
 		this.multiplier = 0;
+
+		//confetti part
+		this.confettis = null;
+		this.animationConfettis = null;
+
+		// GUI part
+		this.panel = new Gui.Rectangle();
+		this.text = new Gui.TextBlock();
 	}
 
 	async init(): Promise<void>
@@ -43,6 +56,10 @@ export class SlotMachine extends Game
 		const result = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
 		const deco1 = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
 		const deco2 = await Babylon.SceneLoader.ImportMeshAsync(null, "./", "test.glb", this.scene);
+		const confettis = await Babylon.SceneLoader.ImportMeshAsync(null, './', "test_confetti.glb", this.scene);
+		this.confettis = confettis.meshes;
+		this.animationConfettis = confettis.animationGroups;
+
 
 		let i = 0;
 		let rotate = deco1.meshes[0].rotation.clone();
@@ -66,6 +83,7 @@ export class SlotMachine extends Game
 		this.fourthWheel!["texture"] = result.meshes[18];
 
 		result.meshes.forEach(mesh =>{
+			mesh.renderingGroupId = 1;
 			const rotate = mesh.rotation.clone();
 			mesh.rotation = rotate.add(new Babylon.Vector3(Math.PI, Math.PI, Math.PI));
 		});
@@ -88,6 +106,35 @@ export class SlotMachine extends Game
 				}
 			}
 		));
+		this.initText();
+		this.initConfettis();
+		this.hideConfettis();
+	}
+
+	initText()
+	{
+		const texture = Gui.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+		this.panel.verticalAlignment = VERTICAL_BOT;
+		this.panel.horizontalAlignment = HORIZONTAL_CENTER;
+		this.panel.height = "50px";
+		this.panel.width = "490px";
+		this.panel.top = "-160px";
+		this.panel.left = "10px";
+		this.panel.color = "white";
+		this.panel.thickness = 0;
+
+		this.text.text = "";
+		this.text.height = "50px";
+		this.text.width = "490px";
+		this.text.horizontalAlignment = HORIZONTAL_LEFT;
+		this.text.fontSize = 47;
+		this.panel.addControl(this.text);
+		texture.addControl(this.panel);
+	}
+
+	showText(value:number)
+	{
+		this.text.text = `Last won : ${value}`
 	}
 
 	initScene(): void
@@ -97,10 +144,55 @@ export class SlotMachine extends Game
 		this.camera!.fov = 1.2;
 		this.camera.beta += 0.2;
 
-		this.camera.attachControl();
 		const light = new Babylon.HemisphericLight("light", new Babylon.Vector3(0, 1, 0), this.scene);
 		light.diffuse = new Babylon.Color3(1, 1, 1);
+	}
 
+	initConfettis(): void
+	{
+		this.confettis!.forEach((mesh) => {
+			mesh.position = new Babylon.Vector3(0, 0.3, 1);
+			mesh.renderingGroupId = 10;
+		})
+	}
+
+	hideConfettis(): void
+	{
+		this.confettis!.forEach((mesh) =>{
+			mesh.isVisible = false;
+		})
+	}
+
+	showConfettis(toShow: number = 63): void
+	{
+		this.animationConfettis!.forEach((ag) =>{
+			ag.goToFrame(0);
+		})
+		for (let i:number = 0; i <= toShow; i++)
+		{
+			this.confettis![i].isVisible = true;
+		}
+	}
+
+	calculateConfettis(won: number): void
+	{
+		const spent: number = this.bets!.getAmount() * 2;
+		let toShow: number;
+		
+		if (spent > won)
+			toShow = 1;
+		else if (spent == won)
+			toShow = 5;
+		else if (spent <= won * 1.5)
+			toShow = 10;
+		else if (spent <= won * 2)
+			toShow = 20
+		else if (spent <= won * 3)
+			toShow = 40;
+		else 
+			toShow = 63;
+		console.log("confettis : " + toShow);
+		this.showConfettis(toShow);
 	}
 
 	generateAleatoryNumber(): number
@@ -140,14 +232,18 @@ export class SlotMachine extends Game
 		await this.sleep(100);
 		await this.makeRotations(this.fourthWheel["texture"]!);
 		console.log("before : ");
-		this.player.earnMoney(
-			this.calculWin([this.firstWheel["rotation"], this.secondWheel["rotation"], this.thirdWheel["rotation"],
+	
+		const result:number =	this.calculWin([this.firstWheel["rotation"], this.secondWheel["rotation"], this.thirdWheel["rotation"],
 			this.fourthWheel["rotation"]],
 				-1,
 				0,
 				0,
-				amount) * this.multiplier);
-		await this.sleep(500);
+				amount);
+		this.player!.earnMoney(result * this.multiplier);
+		this.calculateConfettis(result);
+		this.showText(result);
+		await this.sleep(1500);
+		this.hideConfettis();
 		this.canLauch =  true;
 	}
 
